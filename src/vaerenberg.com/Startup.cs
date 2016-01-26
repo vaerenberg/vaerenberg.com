@@ -41,6 +41,7 @@ namespace Vaerenberg
             loggerFactory.AddDebug();
 
             app.UseIISPlatformHandler();
+            app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseMvc();
         }
