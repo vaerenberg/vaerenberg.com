@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Newtonsoft.Json;
+using Vaerenberg.Filters;
 using Vaerenberg.Models;
 using Vaerenberg.Services;
 
@@ -18,6 +19,7 @@ namespace Vaerenberg.Controllers
 
         // POST api/contact
         [HttpPost]
+        [ValidateModelState]
         public async Task<IActionResult> Post(ContactRequest request)
         {
             await

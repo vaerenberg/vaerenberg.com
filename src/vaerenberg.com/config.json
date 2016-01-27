@@ -1,7 +1,7 @@
 ﻿{
   "Mandrill": {
     "ApiKey": "",
-    "FromEmail": "web@vaerenberg.com"
+    "FromEmail": "contact@vaerenberg.com"
   },
   "Logging": {
     "IncludeScopes": false,
