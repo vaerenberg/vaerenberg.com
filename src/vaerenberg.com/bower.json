@@ -1,0 +1,11 @@
+{
+  "name": "ASP.NET",
+  "private": true,
+  "dependencies": {
+    "jquery": "2.2.0",
+    "bootswatch-dist": "flatly",
+    "bootstrapValidator": "0.5.3",
+    "font-awesome": "4.5.0",
+    "academicons": "1.6.0"
+  }
+}

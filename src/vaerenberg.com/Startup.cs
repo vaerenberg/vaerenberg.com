@@ -11,8 +11,9 @@ namespace Vaerenberg
     {
         public Startup(IHostingEnvironment env)
         {
-            var builder = new ConfigurationBuilder()
-                .AddJsonFile("config.json");
+            var builder = new ConfigurationBuilder();
+
+            builder.AddJsonFile("appSettings.json");
 
             if (env.IsDevelopment())
             {

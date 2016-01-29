@@ -49,22 +49,22 @@ $(document).ready(function () {
 
             var $form = $(e.target);
             var validator = $form.data('bootstrapValidator');
-        
+
             var request = $.ajax({
-                url: $form.attr('action'),
+                url: 'api/contact',
                 method: "POST",
                 data: $form.serialize()
             });
- 
+
             request.done(function () {
                 $('#error_message').addClass('hidden');
                 $('#success_message').removeClass('hidden');
                 validator.resetForm();
             });
- 
+
             request.fail(function (xhr) {
                 $('#success_message').addClass('hidden');
-                $('#error_message').html("Oops... something went wrong: " + xhr.statusText + " (" + xhr.status  +") " +  xhr.responseText);
+                $('#error_message').html("Oops... something went wrong: " + xhr.statusText + " (" + xhr.status + ") " + xhr.responseText);
                 $('#error_message').removeClass('hidden');
                 validator.resetForm();
             });
