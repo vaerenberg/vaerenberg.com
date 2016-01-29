@@ -43,6 +43,7 @@ namespace Vaerenberg
             app.UseIISPlatformHandler();
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseStatusCodePages();
             app.UseMvc();
         }
 
