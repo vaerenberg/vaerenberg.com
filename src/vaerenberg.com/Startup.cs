@@ -43,10 +43,6 @@ namespace Vaerenberg
             loggerFactory.AddDebug();
 
             app.UseIISPlatformHandler();
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
-            app.UseStatusCodePages();
-            app.UseMvc();
 
             app.Use(async (context, next) =>
             {
@@ -55,7 +51,6 @@ namespace Vaerenberg
 
                 if (context.Request.Method == "GET" && host.ToLower().Contains(www))
                 {
-
                     var withoutWww =
                         context.Request.Scheme + "://" +
                         Regex.Replace(host, www, "", RegexOptions.IgnoreCase) +
@@ -67,6 +62,11 @@ namespace Vaerenberg
                     await next();
                 }
             });
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseStatusCodePages();
+            app.UseMvc();            
         }
 
         // Entry point for the application.
