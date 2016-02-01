@@ -3,7 +3,6 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
 using Vaerenberg.Services;
 
 namespace Vaerenberg
@@ -44,24 +43,7 @@ namespace Vaerenberg
 
             app.UseIISPlatformHandler();
 
-            app.Use(async (context, next) =>
-            {
-                const string www = "www.";
-                var host = context.Request.Host.ToUriComponent();
-
-                if (context.Request.Method == "GET" && host.ToLower().Contains(www))
-                {
-                    var withoutWww =
-                        context.Request.Scheme + "://" +
-                        Regex.Replace(host, www, "", RegexOptions.IgnoreCase) +
-                        context.Request.Path;
-                    context.Response.Redirect(withoutWww, permanent: true);
-                }
-                else
-                {
-                    await next();
-                }
-            });
+            app.UseRedirectWwwToNonWww();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
