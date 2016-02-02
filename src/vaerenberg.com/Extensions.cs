@@ -5,7 +5,7 @@ namespace Vaerenberg
 {
     static class Extensions
     {
-        public static void UseRedirectWwwToNonWww(this IApplicationBuilder app)
+        public static void UseWwwToNakedDomainRedirection(this IApplicationBuilder app)
         {
             app.Use(async (context, next) =>
             {
@@ -14,11 +14,11 @@ namespace Vaerenberg
 
                 if (context.Request.Method == "GET" && host.ToLower().Contains(www))
                 {
-                    var withoutWww =
+                    var naked =
                         context.Request.Scheme + "://" +
                         Regex.Replace(host, www, "", RegexOptions.IgnoreCase) +
                         context.Request.Path;
-                    context.Response.Redirect(withoutWww, permanent: true);
+                    context.Response.Redirect(naked, permanent: true);
                 }
                 else
                 {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Threading.Tasks;
 using Mandrill;
 using Mandrill.Models;
@@ -15,6 +16,12 @@ namespace Vaerenberg.Services
         public MandrillService(IOptions<AppSettings> settings)
         {
             _options = settings.Value.Mandrill;
+
+            if (string.IsNullOrEmpty(_options.ApiKey))
+            {
+                throw new ConfigurationErrorsException("A Mandrill API key needs to be configured.");
+            }
+
             _api = new MandrillApi(_options.ApiKey);
         }
 

@@ -43,7 +43,7 @@ namespace Vaerenberg
 
             app.UseIISPlatformHandler();
 
-            app.UseRedirectWwwToNonWww();
+            app.UseWwwToNakedDomainRedirection();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
