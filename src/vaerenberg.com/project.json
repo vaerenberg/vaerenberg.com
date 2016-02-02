@@ -15,7 +15,8 @@
     "Microsoft.Extensions.SecretManager": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
     "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final"
+    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
+    "Mandrill.net": "2.1.2"
   },
 
   "commands": {
@@ -23,14 +24,8 @@
   },
 
   "frameworks": {
-    "dnx451": {
-      "dependencies": {
-        "Mandrill": "2.2.12"
-      },
-      "frameworkAssemblies": {
-        "System.configuration": "4.0.0.0"
-      }
-    }
+    "dnx451": { },
+    "dnxcore50": { }
   },
 
   "userSecretsId": "vaerenberg.com",

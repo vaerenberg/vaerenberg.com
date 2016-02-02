@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Mandrill;
-using Mandrill.Models;
-using Mandrill.Requests.Messages;
+using Mandrill.Model;
 using Microsoft.Extensions.OptionsModel;
 
 namespace Vaerenberg.Services
@@ -11,7 +10,7 @@ namespace Vaerenberg.Services
     public class MandrillService : IEmailService
     {
         private readonly MandrillOptions _options;
-        private readonly IMandrillApi _api;
+        private readonly MandrillApi _api;
 
         public MandrillService(IOptions<AppSettings> settings)
         {
@@ -19,7 +18,7 @@ namespace Vaerenberg.Services
 
             if (string.IsNullOrEmpty(_options.ApiKey))
             {
-                throw new ConfigurationErrorsException("A Mandrill API key needs to be configured.");
+                throw new InvalidOperationException("A Mandrill API key needs to be configured.");
             }
 
             _api = new MandrillApi(_options.ApiKey);
@@ -27,17 +26,14 @@ namespace Vaerenberg.Services
 
         public async Task Send(string recipient, string subject, string body)
         {
-            var mandrillMessage = new EmailMessage
+            var message = new MandrillMessage(_options.FromEmail, recipient, subject, body);
+            var result = await _api.Messages.SendAsync(message);
+
+            var response = result.FirstOrDefault();
+            if (response?.Status == MandrillSendMessageResponseStatus.Invalid)
             {
-                FromEmail = _options.FromEmail,
-                To = new List<EmailAddress>(new[] { new EmailAddress(recipient) }),
-                Subject = subject,
-                Html = body
-            };
-
-            var request = new SendMessageRequest(mandrillMessage);
-
-            await _api.SendMessage(request);
+                throw new InvalidOperationException("Mandrill API reports invalid attempt to send message.");
+            }
         }
     }
 }
