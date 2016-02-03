@@ -9,6 +9,8 @@ namespace Vaerenberg
 {
     public class Startup
     {
+        public IConfigurationRoot Configuration { get; set; }
+        
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder();
@@ -25,15 +27,13 @@ namespace Vaerenberg
             Configuration = builder.Build();
         }
 
-        public IConfigurationRoot Configuration { get; set; }
-
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
             services.Configure<AppSettings>(Configuration);
 
             services.AddMvc();
-            services.AddTransient<IEmailService, MandrillService>();
+            services.AddScoped<IEmailService, MandrillService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
