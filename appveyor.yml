@@ -6,3 +6,5 @@ install:
 
 build:
   verbosity: minimal
+  
+test: off
