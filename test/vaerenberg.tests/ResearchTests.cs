@@ -20,7 +20,6 @@ namespace vaerenberg.tests
             var result = sut.Index() as RedirectResult;
 
             // assert
-            Assert.NotNull(result);
             Assert.Equal("https://www.researchgate.net/profile/Bart_Vaerenberg", result.Url);
             Assert.False(result.Permanent);
         }
