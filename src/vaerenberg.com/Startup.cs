@@ -33,7 +33,7 @@ namespace Vaerenberg
             services.Configure<AppSettings>(Configuration);
 
             services.AddMvc();
-            services.AddScoped<IEmailService, MandrillService>();
+            services.AddScoped<IEmailService, SendGridService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
