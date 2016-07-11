@@ -2,10 +2,14 @@ os: Visual Studio 2015
 
 before_build:
 - dotnet restore src\vaerenberg.com\project.json
+- dotnet restore test\vaerenberg.tests\project.json
+
 build:
   project: Vaerenberg.sln
   parallel: true
   verbosity: minimal
+
 after_build:
 - dotnet publish .\src\vaerenberg.com --output %appveyor_build_folder%\dist --configuration Debug --no-build
+
 test: off
