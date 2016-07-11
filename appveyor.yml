@@ -9,7 +9,4 @@ build:
   parallel: true
   verbosity: minimal
 
-after_build:
-- dotnet publish .\src\vaerenberg.com --output %appveyor_build_folder%\dist --configuration Debug --no-build
-
 test: off
