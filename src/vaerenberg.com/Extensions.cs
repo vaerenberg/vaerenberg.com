@@ -1,5 +1,5 @@
 using System.Text.RegularExpressions;
-using Microsoft.AspNet.Builder;
+using Microsoft.AspNetCore.Builder;
 
 namespace Vaerenberg
 {

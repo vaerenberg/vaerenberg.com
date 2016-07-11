@@ -1,10 +1,6 @@
-﻿using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using Vaerenberg.Controllers;
-using Vaerenberg.Models;
-using Vaerenberg.Services;
 using Xunit;
-using Microsoft.AspNet.Mvc;
 
 namespace vaerenberg.tests
 {

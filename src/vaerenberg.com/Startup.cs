@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,23 +9,23 @@ namespace Vaerenberg
 {
     public class Startup
     {
-        public IConfigurationRoot Configuration { get; set; }
-        
         public Startup(IHostingEnvironment env)
         {
-            var builder = new ConfigurationBuilder();
-
-            builder.AddJsonFile("appSettings.json");
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
 
             if (env.IsDevelopment())
             {
                 builder.AddUserSecrets();
             }
 
-            builder.AddEnvironmentVariables();
-
             Configuration = builder.Build();
         }
+
+        public IConfigurationRoot Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -36,22 +36,23 @@ namespace Vaerenberg
             services.AddScoped<IEmailService, SendGridService>();
         }
 
+       
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseIISPlatformHandler();
-
             app.UseWwwToNakedDomainRedirection();
-
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseStatusCodePages();
-            app.UseMvc();            
-        }
+            app.UseMvc();
 
-        // Entry point for the application.
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
+            }
+        }
     }
 }

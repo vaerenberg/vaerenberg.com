@@ -4,8 +4,6 @@ using Vaerenberg.Controllers;
 using Vaerenberg.Models;
 using Vaerenberg.Services;
 using Xunit;
-using System;
-using Moq;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,19 +17,14 @@ namespace vaerenberg.tests
         {
             // arrange 
             var request = new ContactRequest { Name = "a", Email = "a@a.net", Message = "aaa" };
-            var emailService = new Moq.Mock<IEmailService>();
-            var sut = new ContactController(emailService.Object);
+            var emailService = new FakeEmailService();
+            var sut = new ContactController(emailService);
 
             // act
             await sut.Post(request);
 
             // assert
-            emailService.Verify(service =>
-                service.Send(
-                    "bart@vaerenberg.com",
-                    "Message from vaerenberg.com",
-                    JsonConvert.SerializeObject(request)
-                ), Times.Once);
+            Assert.Equal(1, emailService.SendCallCount);
         }
 
         [Fact]
@@ -69,7 +62,7 @@ namespace vaerenberg.tests
         public void Contact_WithInvalidEmail_IsInvalid()
         {
             // arrange 
-            var request = new ContactRequest { Name = "a", Email = "a@a", Message = "aaa" };
+            var request = new ContactRequest { Name = "a", Email = "a@a@a", Message = "aaa" };
 
             // act
             var results = ValidateModel(request);
@@ -110,6 +103,16 @@ namespace vaerenberg.tests
             var context = new ValidationContext(model, null, null);
             Validator.TryValidateObject(model, context, results, true);
             return results;
+        }
+    }
+
+    public class FakeEmailService : IEmailService
+    {
+        public int SendCallCount { get; set; }
+        public Task Send(string recipient, string subject, string body)
+        {
+            SendCallCount++;
+            return Task.CompletedTask;
         }
     }
 }
