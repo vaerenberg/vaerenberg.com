@@ -1,22 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EBDC8C9F-2415-4AC4-9CE1-F6EDB5E6A473}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{49F68C35-FF51-4609-8EFD-FDD42F279E7F}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
-		global.json = global.json
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "vaerenberg.com", "src\vaerenberg.com\vaerenberg.com.xproj", "{29ABD7C3-2412-4850-83B3-0DBC1875C171}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "vaerenberg.tests", "test\vaerenberg.tests\vaerenberg.tests.xproj", "{650A5A85-5956-491E-9312-5E25A27D1108}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{1F84D950-F2FB-4105-BEBE-9D819E0CB7EC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "vaerenberg.com", "src\vaerenberg.com\vaerenberg.com.csproj", "{29ABD7C3-2412-4850-83B3-0DBC1875C171}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "vaerenberg.tests", "test\vaerenberg.tests\vaerenberg.tests.csproj", "{650A5A85-5956-491E-9312-5E25A27D1108}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
