@@ -1,1 +1,7 @@
-﻿
+﻿.text-yellow {
+    color: #FFC000;
+}
+
+.text-yellow:hover {
+    color: #000000;
+}
