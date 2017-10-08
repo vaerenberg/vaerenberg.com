@@ -1,4 +1,4 @@
-$(document).ready(function () {
+﻿$(document).ready(function () {
     $('#contact_form').bootstrapValidator({
 
         feedbackIcons: {

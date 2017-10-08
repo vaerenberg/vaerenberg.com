@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Vaerenberg.Controllers;
 using Vaerenberg.Models;
 using Vaerenberg.Services;
@@ -8,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace vaerenberg.tests
+namespace Vaerenberg.tests
 {
     public class ContactTests
     {

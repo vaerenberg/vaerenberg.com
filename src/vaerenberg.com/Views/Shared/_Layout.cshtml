@@ -35,63 +35,7 @@
 
 <body>
     <div class="container">
-        <div class="row text-center">
-            <h1>Vaerenberg <small>BVBA</small></h1>
-            <h4>Software Architects</h4>
-            
-                <img class="img-responsive center-block" style="margin-top:-60px" src="img/vaerenberg-bvba.png" alt="">
-           
-            
-        </div>
-        <br />
-        <div class="row">
-            <div class="col-sm-6 col-sm-offset-3 col-lg-4 col-lg-offset-4">
-                <h4>Leave a message</h4>
-
-                <form class="form-horizontal" id="contact_form">
-
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                                <input name="name" placeholder="Your name" class="form-control" type="text">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-                                <input name="email" placeholder="Your email address" class="form-control" type="text">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
-                                <textarea class="form-control" name="message" placeholder="Message" rows="3"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-success hidden" role="alert" id="success_message">
-                        <i class="glyphicon glyphicon-thumbs-up"></i> Your message has been sent.
-                    </div>
-                    <div class="alert alert-danger hidden" role="alert" id="error_message">
-                        <i class="glyphicon glyphicon-remove"></i>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <button type="submit" id="send_button" class="btn btn-primary">Send</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+       @RenderBody()
     </div>
 
     <footer class="text-center">
@@ -121,13 +65,15 @@
                 </ul>
             </div>
             <div>Antwerp, Belgium</div>
-            <div>Copyright &copy; Vaerenberg BVBA 2017</div>
+            <div>Copyright &copy; 2015 - @DateTime.Today.Year Vaerenberg BVBA </div>
         </div>
     </footer>
-    
+
     <script src="lib/jquery/dist/jquery.js"></script>
     <script src="lib/bootswatch-dist/js/bootstrap.js"></script>
     <script src="lib/bootstrapValidator/dist/js/bootstrapValidator.js"></script>
     <script src="js/site.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

@@ -2,7 +2,7 @@
 using Vaerenberg.Controllers;
 using Xunit;
 
-namespace vaerenberg.tests
+namespace Vaerenberg.tests
 {
     public class ResearchTests
     {

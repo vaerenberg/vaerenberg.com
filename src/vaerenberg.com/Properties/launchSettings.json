@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:32473/",
+      "applicationUrl": "http://localhost:28755/",
       "sslPort": 0
     }
   },
@@ -18,10 +18,10 @@
     "vaerenberg.com": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:28758/"
     }
   }
 }
