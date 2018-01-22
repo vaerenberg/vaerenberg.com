@@ -17,7 +17,6 @@ namespace Vaerenberg.Controllers
             _emailService = emailService;
         }
 
-        // POST api/contact
         [HttpPost]
         [ValidateModelState]
         public async Task<IActionResult> Post(ContactRequest request)
