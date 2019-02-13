@@ -23,7 +23,7 @@ namespace Vaerenberg
             services.Configure<AppSettings>(Configuration);
 
            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddScoped<IEmailService, SendGridService>();
         }
