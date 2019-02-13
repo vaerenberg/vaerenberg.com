@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Vaerenberg.Services;
@@ -21,7 +22,9 @@ namespace Vaerenberg
             services.AddOptions();
             services.Configure<AppSettings>(Configuration);
 
-            services.AddMvc();
+           services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
             services.AddScoped<IEmailService, SendGridService>();
         }
 
@@ -35,8 +38,10 @@ namespace Vaerenberg
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
             }
-
+            
+            app.UseHttpsRedirection();
             app.UseWwwToNakedDomainRedirection();
             app.UseStaticFiles();
 
