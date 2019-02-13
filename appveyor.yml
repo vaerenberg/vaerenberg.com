@@ -1,0 +1,17 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+before_build:
+- cmd: dotnet restore --verbosity minimal
+build:
+  verbosity: minimal
+after_test:
+- cmd: dotnet publish .\src\vaerenberg.com\vaerenberg.com.csproj -c Release
+artifacts:
+- path: src\vaerenberg.com\bin\Release\netcoreapp2.2\publish\
+  name: vaerenberg.com
+  type: zip
+deploy:
+- provider: Environment
+    name: Vaerenberg.com
+  on:
+    branch: master
