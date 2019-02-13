@@ -12,6 +12,6 @@ artifacts:
   type: zip
 deploy:
 - provider: Environment
-    name: Vaerenberg.com
+  name: Vaerenberg.com
   on:
     branch: master
