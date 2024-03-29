@@ -7,7 +7,7 @@ build:
 after_test:
 - cmd: dotnet publish .\src\vaerenberg.com\vaerenberg.com.csproj -c Release
 artifacts:
-- path: src\vaerenberg.com\bin\Release\netcoreapp2.2\publish\
+- path: src\vaerenberg.com\bin\Release\net8.0\publish\
   name: vaerenberg.com
   type: zip
 deploy:
