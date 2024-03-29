@@ -1,8 +1,7 @@
-﻿namespace Vaerenberg.Services
+﻿namespace Vaerenberg.Services;
+
+public class SendGridOptions
 {
-    public class SendGridOptions
-    {
-        public string ApiKey { get; set; }
-        public string FromEmail { get; set; }
-    }
+    public string ApiKey { get; set; } = null!;
+    public string FromEmail { get; set; } = null!;
 }

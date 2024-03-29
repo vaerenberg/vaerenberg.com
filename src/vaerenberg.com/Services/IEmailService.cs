@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace Vaerenberg.Services
+namespace Vaerenberg.Services;
+
+public interface IEmailService
 {
-    public interface IEmailService
-    {
-        Task Send(string recipient, string subject, string body);
-    }
+    Task Send(string recipient, string subject, string body);
 }

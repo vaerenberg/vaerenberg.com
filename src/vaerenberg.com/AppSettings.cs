@@ -1,9 +1,8 @@
 ﻿using Vaerenberg.Services;
 
-namespace Vaerenberg
+namespace Vaerenberg;
+
+public class AppSettings
 {
-    public class AppSettings
-    {
-        public SendGridOptions SendGrid { get; set; }
-    }
+    public SendGridOptions SendGrid { get; set; } = null!;
 }

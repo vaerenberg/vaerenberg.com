@@ -1,17 +1,31 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using Vaerenberg.Services;
+using Vaerenberg;
 
-namespace Vaerenberg
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOptions();
+builder.Services.Configure<AppSettings>(builder.Configuration);
+builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IEmailService, SendGridService>();
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-    }
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
+
+app.UseHttpsRedirection();
+app.UseWwwToNakedDomainRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
