@@ -96,7 +96,7 @@ public class ContactTests
         Assert.Equal("Message", results[0].MemberNames.First());
     }
 
-    private IList<ValidationResult> ValidateModel(object model)
+    private static List<ValidationResult> ValidateModel(object model)
     {
         var results = new List<ValidationResult>();
         var context = new ValidationContext(model, null, null);
