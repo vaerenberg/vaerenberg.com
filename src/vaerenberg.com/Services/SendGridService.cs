@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Headers;
 using Microsoft.Extensions.Options;
 
 namespace Vaerenberg.Services;
@@ -9,20 +6,20 @@ namespace Vaerenberg.Services;
 public class SendGridService : IEmailService
 {
     public const string Endpoint = "https://api.sendgrid.com/api/mail.send.json";
-    private readonly SendGridOptions _options;
+    private readonly EmailOptions _options;
     private readonly HttpClient _http;
 
-    public SendGridService(IOptions<AppSettings> settings)
+    public SendGridService(IOptions<AppSettings> settings, IConfiguration config)
     {
-        _options = settings.Value.SendGrid;
-
-        if (string.IsNullOrEmpty(_options.ApiKey))
+        _options = settings.Value.Email;
+        var key = config.GetValue<string>("SendGrid:ApiKey");
+        if (string.IsNullOrEmpty(key))
         {
             throw new InvalidOperationException("A SendGrid API key needs to be configured.");
         }
 
         _http = new HttpClient();
-        _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _options.ApiKey);
+        _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
     }
 
     public async Task Send(string recipient, string subject, string body)
