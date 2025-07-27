@@ -1,12 +1,17 @@
 ﻿using Vaerenberg.Services;
 using Vaerenberg;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOptions();
 builder.Services.Configure<AppSettings>(builder.Configuration);
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IEmailService, SendGridService>();
+builder.Services.AddAzureClients(x =>
+{
+    x.AddEmailClient(builder.Configuration.GetValue<string>("AzureEmail:ConnectionString"));
+});
+builder.Services.AddScoped<IEmailService, AzureEmail>();
 
 var app = builder.Build();
 

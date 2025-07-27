@@ -4,5 +4,5 @@ namespace Vaerenberg;
 
 public class AppSettings
 {
-    public SendGridOptions SendGrid { get; set; } = null!;
+    public EmailOptions Email { get; set; } = null!;
 }
