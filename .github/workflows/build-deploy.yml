@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy ASP.Net Core app to Azure Web App - vaerenbergbvba
+name: Build & Deploy
 
 on:
   push:
@@ -21,7 +18,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '3.1'
+          dotnet-version: '9.0'
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -53,3 +50,4 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7FEC08AA3BE14D24B1FCCEA1A87198CC }}
+          
