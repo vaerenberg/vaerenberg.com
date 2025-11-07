@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace Vaerenberg.Models;
@@ -16,4 +17,7 @@ public class ContactRequest
     [Required]
     [StringLength(500)]
     public string Message { get; set; } = null!;
+
+    [FromForm(Name = "g-recaptcha-response")]
+    public string? RecaptchaToken { get; set; }
 }
