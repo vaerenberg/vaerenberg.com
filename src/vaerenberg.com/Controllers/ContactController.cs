@@ -23,7 +23,9 @@ public class ContactController(IEmailService emailService, IRecaptchaService rec
 
         await
             emailService.Send("bart@vaerenberg.com", "Message from vaerenberg.com",
-                JsonSerializer.Serialize(request));
+                JsonSerializer.Serialize(new {
+                    request.Name, request.Email, request.Message
+                }));
 
         return Ok();
     }
