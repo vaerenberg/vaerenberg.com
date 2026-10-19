@@ -212,6 +212,7 @@ _Pvt_Extensions/
 ModelManifest.xml
 
 # Vaerenberg
+/tenerife-invitations/
 /src/vaerenberg.com/bower_components
 /src/vaerenberg.com/Properties/ServiceDependencies/vaerenbergbvba - Web Deploy/profile.arm.json
 /src/vaerenberg.com/Properties/PublishProfiles/vaerenbergbvba - Web Deploy.pubxml
