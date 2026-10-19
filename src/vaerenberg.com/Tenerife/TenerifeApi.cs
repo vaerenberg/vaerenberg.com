@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Vaerenberg.Tenerife;
@@ -40,6 +41,7 @@ public static class TenerifeApi
     public static void MapTenerifeApi(this WebApplication app)
     {
         var api = app.MapGroup("/api/tenerife-2026");
+        api.AddEndpointFilter(async (context, next) => { context.HttpContext.Response.Headers.CacheControl = "no-store"; return await next(context); });
         api.MapGet("/me", async (HttpContext ctx, IConfiguration cfg) => {
             var me = Authenticate(ctx, cfg);
             if (me == null) return Results.Unauthorized();
@@ -57,7 +59,7 @@ public static class TenerifeApi
         api.MapPut("/me", async (HttpContext ctx, IConfiguration cfg, [FromBody] Ballot input) => {
             var me = Authenticate(ctx,cfg);
             if (me == null) return Results.Unauthorized();
-            if (input.Votes.Count > Activities.Count || input.Idea.Length > 1500 ||
+            if (input == null || input.Votes == null || input.Idea == null || input.Joint == null || input.Votes.Count > Activities.Count || input.Idea.Length > 1500 ||
                 input.Joint.Count > 5 || input.Joint.Any(s => s.Length > 60) ||
                 input.Votes.Any(kv => !Activities.Contains(kv.Key) || !Ratings.Contains(kv.Value)))
                 return Results.BadRequest(new { error = "Invalid ballot" });
@@ -126,8 +128,9 @@ public static class TenerifeApi
     private static BlobContainerClient Container(IConfiguration cfg)
     {
         var connection=cfg["Tenerife2026:StorageConnectionString"];
-        if(string.IsNullOrWhiteSpace(connection))throw new InvalidOperationException("Tenerife storage is not configured");
-        return new BlobContainerClient(connection,cfg["Tenerife2026:Container"] ?? "tenerife-2026");
+        var container=cfg["Tenerife2026:Container"] ?? "tenerife-2026";
+        if(!string.IsNullOrWhiteSpace(connection)) return new BlobContainerClient(connection,container);
+        return new BlobContainerClient(new Uri("https://vaerenberg.blob.core.windows.net/"+container),new DefaultAzureCredential());
     }
     private static string BlobName(Invite invite)
     {
