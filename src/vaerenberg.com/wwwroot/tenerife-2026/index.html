@@ -32,7 +32,7 @@ button.secondary{background:#e6f2ef;color:#125950}.cards{display:grid;grid-templ
 <label>Wie ben jij?<br><select id="person"></select></label>
 <label>Gezinscode (demo)<br><input id="pin" type="password" placeholder="Alleen voor gezinsdashboard"></label>
 </div>
-<p class="muted">Stem op activiteiten. Jouw antwoorden worden voorlopig alleen in deze browser bewaard.</p>
+<p id="syncStatus" class="note">Demo: lokaal opgeslagen. Open een persoonlijke uitnodigingslink om centraal op te slaan.</p><p class="muted">Stem op activiteiten. Jouw antwoorden worden voorlopig alleen in deze browser bewaard.</p>
 <div class="toolbar">
 <button data-tab="choices">✨ Mijn keuzes</button><button class="secondary" data-tab="results">📊 Resultaten</button><button class="secondary" data-tab="transfer">📤 Export/import</button>
 </div>
@@ -68,13 +68,16 @@ const ACTIVITIES=[
 ['dinner','🍽️','Samen eten','Een gezellige lunch of avond met vrienden of grootouders.']
 ];
 const OPTIONS=[['love','🤩','Super'],['like','😊','Leuk'],['neutral','😐','Om het even'],['no','🙈','Liever niet']];
+const apiBase='/api/tenerife-2026';let apiToken=new URLSearchParams(location.search).get('token')||sessionStorage.getItem('tenerife-token')||'';if(apiToken)sessionStorage.setItem('tenerife-token',apiToken);
+async function request(route,options={}){const response=await fetch(apiBase+route,{...options,headers:{'Authorization':'Bearer '+apiToken,'Content-Type':'application/json',...(options.headers||{})},cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);return response.status===204?null:response.json()}
+let connected=false;let syncTimer;async function sync(){if(!connected)return;try{await request('/me',{method:'PUT',body:JSON.stringify(record())});$('syncStatus').textContent='✓ Centraal opgeslagen'}catch{$('syncStatus').textContent='Opslaan mislukt; probeer opnieuw'}}
 const STORE='tenerife-adventure-picker-v1';let data={};try{data=JSON.parse(localStorage.getItem(STORE)||'{}')}catch{}
 let who=new URLSearchParams(location.search).get('person')||'Bart';if(!PEOPLE.some(x=>x[0]===who))who='Bart';
 let tab='choices';const $=id=>document.getElementById(id),role=n=>PEOPLE.find(p=>p[0]===n)?.[1]||'soonsen';
 const admin=()=>role(who)==='gezin'&&$('pin').value==='tenerife2026';
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function record(){return data[who]||(data[who]={votes:{},idea:'',joint:[]})}
-function save(){localStorage.setItem(STORE,JSON.stringify(data))}
+function save(){localStorage.setItem(STORE,JSON.stringify(data));if(connected){$('syncStatus').textContent='Opslaan…';clearTimeout(syncTimer);syncTimer=setTimeout(sync,500)}}
 function draw(){ $('person').innerHTML=PEOPLE.map(p=>'<option value="'+esc(p[0])+'" '+(who===p[0]?'selected':'')+'>'+esc(p[0])+'</option>').join('');
 for(const id of ['choices','results','transfer'])$(id).classList.toggle('hide',tab!==id);
 if(tab==='choices')drawChoices();if(tab==='results')drawResults();}
@@ -84,7 +87,7 @@ $('idea').value=r.idea||'';
 const types=role(who)==='gezin'?['Met opa en oma','Met de Soonsen','Alleen met ons gezin']:role(who)==='grootouders'?['Met het gezin','Liever af en toe aansluiten']:['Met de Vaerenbergs','Liever flexibel'];
 $('joint').innerHTML=types.map(v=>'<label style="display:inline-block;margin:8px"><input type="checkbox" value="'+esc(v)+'" '+(r.joint.includes(v)?'checked':'')+'> '+esc(v)+'</label>').join('');
 document.querySelectorAll('#joint input').forEach(c=>c.onchange=()=>{record().joint=Array.from(document.querySelectorAll('#joint input:checked')).map(v=>v.value);save()});}
-function drawResults(){const privileged=admin(),names=Object.keys(data).filter(n=>privileged||role(n)!=='gezin');$('scope').textContent=privileged?'Gezinsdemo: individuele lokale antwoorden zichtbaar.':'Gastdemo: alleen geaggregeerde antwoorden van externe gezelschappen voor gezamenlijke activiteiten. Geen individuele gezinsantwoorden.';const shared=['siam','medano','boat','snorkel','pool','dinner'];let html='<p>'+names.length+' lokaal beschikbare deelnemers</p>';
+function drawResults(){if(connected){drawServerResults();return}const privileged=admin(),names=Object.keys(data).filter(n=>privileged||role(n)!=='gezin');$('scope').textContent=privileged?'Gezinsdemo: individuele lokale antwoorden zichtbaar.':'Gastdemo: alleen geaggregeerde antwoorden van externe gezelschappen voor gezamenlijke activiteiten. Geen individuele gezinsantwoorden.';const shared=['siam','medano','boat','snorkel','pool','dinner'];let html='<p>'+names.length+' lokaal beschikbare deelnemers</p>';
 for(const [id,emoji,name] of ACTIVITIES){if(!privileged&&!shared.includes(id))continue;const votes=names.map(n=>[n,data[n]?.votes?.[id]]).filter(x=>x[1]);if(!votes.length)continue;const yes=votes.filter(x=>['love','like'].includes(x[1])).length;html+='<div class="result"><strong>'+emoji+' '+esc(name)+'</strong> — '+yes+'/'+votes.length+' enthousiast<div class="progress"><span style="width:'+(100*yes/votes.length)+'%"></span></div>'+(privileged?'<small>'+votes.map(x=>esc(x[0])+': '+esc(x[1])).join(' · ')+'</small>':'')+'</div>';}
 if(privileged){html+='<h3>Eigen ideeën</h3>';names.forEach(n=>{if(data[n]?.idea)html+='<p><strong>'+esc(n)+':</strong> '+esc(data[n].idea)+'</p>'})}$('overview').innerHTML=html;}
 function download(obj,filename){const url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
@@ -93,6 +96,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.
 $('exportOne').onclick=()=>download({schema:STORE,people:{[who]:record()}},'tenerife-'+who.replaceAll(' ','-')+'.json');
 $('exportAll').onclick=()=>{if(!admin())return alert('Selecteer eerst een gezinslid en voer de demo-gezinscode in.');download({schema:STORE,people:data},'tenerife-alle-antwoorden.json')};
 $('imports').onchange=async e=>{let count=0;for(const f of e.target.files){try{const doc=JSON.parse(await f.text());if(doc.schema!==STORE||!doc.people)continue;for(const [n,r]of Object.entries(doc.people)){if(!PEOPLE.some(p=>p[0]===n)||!r||typeof r!=='object')continue;let clean={votes:{},idea:String(r.idea||'').slice(0,1500),joint:Array.isArray(r.joint)?r.joint.filter(x=>typeof x==='string').slice(0,5):[]};for(const [id,value]of Object.entries(r.votes||{}))if(ACTIVITIES.some(a=>a[0]===id)&&OPTIONS.some(o=>o[0]===value))clean.votes[id]=value;data[n]=clean}count++}catch{}}save();$('importMessage').textContent=count+' bestand(en) verwerkt.';draw()};
-draw();
+async function drawServerResults(){try{const result=await request('/results');if(result.scope==='family'){$('scope').textContent='Alle antwoorden van het eigen gezin en de andere gezelschappen.';$('overview').innerHTML=result.respondents.map(p=>'<div class="result"><strong>'+esc(p.name)+'</strong> ('+esc(p.group)+')<p>'+Object.entries(p.ballot.votes||{}).map(([k,v])=>esc(ACTIVITIES.find(a=>a[0]===k)?.[2]||k)+': '+esc(v)).join(' · ')+'</p><small>'+esc(p.ballot.idea||'')+'</small></div>').join('')}else{$('scope').textContent='Alleen samengevoegde stemmen van jouw gezelschap op gezamenlijke activiteiten.';$('overview').innerHTML=result.activities.map(a=>'<div class="result">'+esc(ACTIVITIES.find(x=>x[0]===a.activity)?.[2]||a.activity)+': '+a.positive+'/'+a.total+' enthousiast</div>').join('')}}catch{$('scope').textContent='Resultaten konden niet worden opgehaald.'}}
+(async()=>{if(apiToken){try{const me=await request('/me');who=me.name;data[who]=me.ballot||{votes:{},idea:'',joint:[]};connected=true;$('person').disabled=true;$('pin').closest('label').style.display='none';$('transfer').innerHTML='<h2>Gedeelde antwoorden</h2><p>Je antwoorden worden automatisch centraal opgeslagen. De persoonlijke uitnodigingslink is vertrouwelijk.</p>';$('syncStatus').textContent='✓ Verbonden als '+who;draw();return}catch{$('syncStatus').textContent='Ongeldige of verlopen uitnodigingslink. Stemmen worden niet centraal opgeslagen.'}}draw()})();
 </script>
 </body></html>
