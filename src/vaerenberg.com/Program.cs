@@ -34,6 +34,11 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// Explicitly support the campaign URL with and without a trailing slash.
+app.MapGet("/tenerife-2026", () => Results.Redirect("/tenerife-2026/", permanent: false));
+app.MapGet("/tenerife-2026/", (IWebHostEnvironment env) =>
+    Results.File(Path.Combine(env.WebRootPath, "tenerife-2026", "index.html"), "text/html"));
+
 app.MapTenerifeApi();
 
 app.MapControllerRoute(
