@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tenerife Adventure Picker</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#17413c;background:#f3faf6}*{box-sizing:border-box}
+body{margin:0}header{padding:30px max(18px,calc((100vw - 1000px)/2));background:linear-gradient(110deg,#046768,#13a18c 65%,#edb95e);color:white}
+h1{font-size:clamp(30px,6vw,50px);margin:12px 0}h2{margin-top:0}main{max-width:1000px;padding:20px;margin:auto}
+.panel{background:white;border-radius:20px;padding:22px;margin-bottom:18px;box-shadow:0 5px 20px #005a5010}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.toolbar>*{flex-grow:1}
+input,select,textarea{font:inherit;padding:11px;border:1px solid #c9dcd7;border-radius:10px;max-width:100%}
+textarea{width:100%;min-height:85px}
+button{font:inherit;border:0;border-radius:11px;padding:12px;cursor:pointer;background:#087f77;color:white;font-weight:650}
+button.secondary{background:#e6f2ef;color:#125950}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px}
+.card{border:1px solid #dce9e4;border-radius:15px;padding:17px;display:flex;flex-direction:column;gap:10px}
+.emoji{font-size:52px;text-align:center;padding:14px;background:linear-gradient(120deg,#e4f7ea,#e5f8fd);border-radius:12px}
+.vote{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:auto}
+.vote button{background:#edf6f1;border:2px solid transparent;color:#18514a;padding:10px 2px}
+.vote button.selected{background:#bcebd9;border-color:#098578}.vote small{display:block;font-size:9px}
+.muted{color:#617e77}.hide{display:none}.note{background:#fff5df;padding:12px;border-left:4px solid #de9b3d;border-radius:7px}
+.progress{height:9px;border-radius:10px;background:#e2efea;overflow:hidden}.progress span{display:block;height:100%;background:#16a38d}
+.result{border-bottom:1px solid #e4eeea;padding:13px 0}
+@media(max-width:500px){.panel{padding:15px}.cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div>🌴 31 oktober – 9 november 2026</div><h1>Tenerife Adventure Picker</h1><p>Welke avonturen wil jij beleven? Kies vrijuit — niets ligt vast!</p></header>
+<main>
+<section class="panel">
+<div class="toolbar">
+<label>Wie ben jij?<br><select id="person"></select></label>
+<label>Gezinscode (demo)<br><input id="pin" type="password" placeholder="Alleen voor gezinsdashboard"></label>
+</div>
+<p class="muted">Stem op activiteiten. Jouw antwoorden worden voorlopig alleen in deze browser bewaard.</p>
+<div class="toolbar">
+<button data-tab="choices">✨ Mijn keuzes</button><button class="secondary" data-tab="results">📊 Resultaten</button><button class="secondary" data-tab="transfer">📤 Export/import</button>
+</div>
+</section>
+<section id="choices" class="panel">
+<h2>Wat lijkt jou leuk?</h2><div id="cards" class="cards"></div>
+<h3>💡 Heb je nog een eigen idee?</h3><textarea id="idea" placeholder="Jouw voorstel..."></textarea>
+<h3>Met wie wil je graag iets doen?</h3><div id="joint"></div>
+<p class="note">Dit is een lokale demo. Individuele links, centrale opslag en veilige rechten volgen in de backendversie.</p>
+</section>
+<section id="results" class="panel hide"><h2>📊 Voorkeuren</h2><p id="scope" class="note"></p><div id="overview"></div></section>
+<section id="transfer" class="panel hide"><h2>📤 Antwoorden delen</h2>
+<p>Download je eigen antwoorden als JSON en bezorg het bestand aan de organisator. Die kan de bestanden importeren om een overzicht te maken.</p>
+<div class="toolbar"><button id="exportOne">Download mijn keuzes</button><button id="exportAll" class="secondary">Download totaaloverzicht (gezin)</button></div>
+<p><label>Importeer een of meer JSON-bestanden<br><input type="file" id="imports" multiple accept=".json,application/json"></label></p><p id="importMessage" class="muted"></p>
+<p class="note">Privacywaarschuwing: deze demo bevat geen echte authenticatie. De gezinscode staat in de broncode en lokale gegevens kunnen technisch worden ingezien. Gebruik voor publieke links pas de volgende, server-side beveiligde versie.</p>
+</section>
+</main>
+<script>
+const PEOPLE=[['Bart','gezin'],['Griet','gezin'],['Jorijn','gezin'],['Nienke','gezin'],['Marie','gezin'],['Opa','grootouders'],['Oma','grootouders'],['Soonsen ouder 1','soonsen'],['Soonsen ouder 2','soonsen'],['Soonsen dochter 1','soonsen'],['Soonsen dochter 2','soonsen'],['Soonsen oma','soonsen']];
+const ACTIVITIES=[
+['siam','💦','Siam Park','Glijbanen, golven en waterpret; voorlopig gepland op donderdag 5 november.'],
+['medano','🏖️','El Médano','Strand, gezellige terrasjes en samen spelen.'],
+['anaga','🌿','Wandelen in Anaga','Het nevelwoud en spectaculaire groene bergen ontdekken.'],
+['teide','🌋','Teide & Roques de García','Vulkanen, bijzondere rotsen en vergezichten.'],
+['chinyero','🥾','Chinyero','Wandelen tussen zwarte lavavelden en dennenbomen.'],
+['boat','🐬','Walvissen spotten','Met een boot de oceaan op.'],
+['snorkel','🤿','Snorkelen','De onderwaterwereld ontdekken.'],
+['kayak','🛶','Kajakken','Een actief avontuur langs de kust als leeftijd en weer het toelaten.'],
+['stars','🌠','Sterren kijken','Een avond onder de indrukwekkende sterrenhemel.'],
+['laguna','🏘️','La Laguna','Kleurrijke straatjes en iets lekkers eten.'],
+['pool','🏊','Zwembad Alborada','Een heerlijke relaxdag dicht bij huis.'],
+['dinner','🍽️','Samen eten','Een gezellige lunch of avond met vrienden of grootouders.']
+];
+const OPTIONS=[['love','🤩','Super'],['like','😊','Leuk'],['neutral','😐','Om het even'],['no','🙈','Liever niet']];
+const STORE='tenerife-adventure-picker-v1';let data={};try{data=JSON.parse(localStorage.getItem(STORE)||'{}')}catch{}
+let who=new URLSearchParams(location.search).get('person')||'Bart';if(!PEOPLE.some(x=>x[0]===who))who='Bart';
+let tab='choices';const $=id=>document.getElementById(id),role=n=>PEOPLE.find(p=>p[0]===n)?.[1]||'soonsen';
+const admin=()=>role(who)==='gezin'&&$('pin').value==='tenerife2026';
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function record(){return data[who]||(data[who]={votes:{},idea:'',joint:[]})}
+function save(){localStorage.setItem(STORE,JSON.stringify(data))}
+function draw(){ $('person').innerHTML=PEOPLE.map(p=>'<option value="'+esc(p[0])+'" '+(who===p[0]?'selected':'')+'>'+esc(p[0])+'</option>').join('');
+for(const id of ['choices','results','transfer'])$(id).classList.toggle('hide',tab!==id);
+if(tab==='choices')drawChoices();if(tab==='results')drawResults();}
+function drawChoices(){let r=record();$('cards').innerHTML=ACTIVITIES.map(([id,emoji,name,desc])=>'<article class="card"><div class="emoji">'+emoji+'</div><strong>'+esc(name)+'</strong><span class="muted">'+esc(desc)+'</span><div class="vote">'+OPTIONS.map(([value,em,label])=>'<button data-act="'+id+'" data-value="'+value+'" class="'+(r.votes[id]===value?'selected':'')+'" aria-label="'+esc(label+' voor '+name)+'">'+em+'<small>'+label+'</small></button>').join('')+'</div></article>').join('');
+document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{record().votes[b.dataset.act]=b.dataset.value;save();drawChoices()});
+$('idea').value=r.idea||'';
+const types=role(who)==='gezin'?['Met opa en oma','Met de Soonsen','Alleen met ons gezin']:role(who)==='grootouders'?['Met het gezin','Liever af en toe aansluiten']:['Met de Vaerenbergs','Liever flexibel'];
+$('joint').innerHTML=types.map(v=>'<label style="display:inline-block;margin:8px"><input type="checkbox" value="'+esc(v)+'" '+(r.joint.includes(v)?'checked':'')+'> '+esc(v)+'</label>').join('');
+document.querySelectorAll('#joint input').forEach(c=>c.onchange=()=>{record().joint=Array.from(document.querySelectorAll('#joint input:checked')).map(v=>v.value);save()});}
+function drawResults(){const privileged=admin(),names=Object.keys(data).filter(n=>privileged||role(n)!=='gezin');$('scope').textContent=privileged?'Gezinsdemo: individuele lokale antwoorden zichtbaar.':'Gastdemo: alleen geaggregeerde antwoorden van externe gezelschappen voor gezamenlijke activiteiten. Geen individuele gezinsantwoorden.';const shared=['siam','medano','boat','snorkel','pool','dinner'];let html='<p>'+names.length+' lokaal beschikbare deelnemers</p>';
+for(const [id,emoji,name] of ACTIVITIES){if(!privileged&&!shared.includes(id))continue;const votes=names.map(n=>[n,data[n]?.votes?.[id]]).filter(x=>x[1]);if(!votes.length)continue;const yes=votes.filter(x=>['love','like'].includes(x[1])).length;html+='<div class="result"><strong>'+emoji+' '+esc(name)+'</strong> — '+yes+'/'+votes.length+' enthousiast<div class="progress"><span style="width:'+(100*yes/votes.length)+'%"></span></div>'+(privileged?'<small>'+votes.map(x=>esc(x[0])+': '+esc(x[1])).join(' · ')+'</small>':'')+'</div>';}
+if(privileged){html+='<h3>Eigen ideeën</h3>';names.forEach(n=>{if(data[n]?.idea)html+='<p><strong>'+esc(n)+':</strong> '+esc(data[n].idea)+'</p>'})}$('overview').innerHTML=html;}
+function download(obj,filename){const url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+$('person').onchange=e=>{who=e.target.value;draw()};$('pin').oninput=()=>{if(tab==='results')drawResults()};$('idea').oninput=e=>{record().idea=e.target.value.slice(0,1500);save()};
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;draw()});
+$('exportOne').onclick=()=>download({schema:STORE,people:{[who]:record()}},'tenerife-'+who.replaceAll(' ','-')+'.json');
+$('exportAll').onclick=()=>{if(!admin())return alert('Selecteer eerst een gezinslid en voer de demo-gezinscode in.');download({schema:STORE,people:data},'tenerife-alle-antwoorden.json')};
+$('imports').onchange=async e=>{let count=0;for(const f of e.target.files){try{const doc=JSON.parse(await f.text());if(doc.schema!==STORE||!doc.people)continue;for(const [n,r]of Object.entries(doc.people)){if(!PEOPLE.some(p=>p[0]===n)||!r||typeof r!=='object')continue;let clean={votes:{},idea:String(r.idea||'').slice(0,1500),joint:Array.isArray(r.joint)?r.joint.filter(x=>typeof x==='string').slice(0,5):[]};for(const [id,value]of Object.entries(r.votes||{}))if(ACTIVITIES.some(a=>a[0]===id)&&OPTIONS.some(o=>o[0]===value))clean.votes[id]=value;data[n]=clean}count++}catch{}}save();$('importMessage').textContent=count+' bestand(en) verwerkt.';draw()};
+draw();
+</script>
+</body></html>
