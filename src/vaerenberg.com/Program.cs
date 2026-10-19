@@ -1,4 +1,5 @@
 ﻿using Vaerenberg.Services;
+using Vaerenberg.Tenerife;
 using Vaerenberg;
 using Microsoft.Extensions.Azure;
 using vaerenberg.com.Services;
@@ -26,11 +27,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseWwwToNakedDomainRedirection();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapTenerifeApi();
 
 app.MapControllerRoute(
     name: "default",
