@@ -141,12 +141,17 @@
       '<h3>📍 '+safe(d.location)+'</h3>'+
       '<iframe class="detail-map" title="Kaart van '+safe(d.location)+'" loading="lazy" referrerpolicy="no-referrer" src="'+
          'https://www.openstreetmap.org/export/embed.html?bbox='+
-         (d.lon-.025)+','+(d.lat-.018)+','+(d.lon+.025)+','+(d.lat+.018)+
+         (d.lon-.1)+','+(d.lat-.072)+','+(d.lon+.1)+','+(d.lat+.072)+
          '&layer=mapnik&marker='+d.lat+','+d.lon+'"></iframe>'+
       '<p class="detail-links"><a target="_blank" rel="noopener noreferrer" href="https://www.openstreetmap.org/?mlat='+d.lat+'&mlon='+d.lon+'#map=13/'+d.lat+'/'+d.lon+'">Grotere kaart ↗</a> · '+
       '<a target="_blank" rel="noopener noreferrer" href="'+d.url+'">Meer informatie / aanbieder ↗</a></p>'+
       '<p class="detail-hint">Prijzen zijn indicaties, geen offertes. Controleer tarieven, leeftijdsgrenzen, openingstijden en eventuele reservaties voor vertrek. Kaartpins voor uitstappen zonder vaste locatie zijn voorbeelden.</p>';
+    // A previous dialog may have left the scrollable content halfway down.
+    $('activityDialogBody').scrollTop = 0;
+    modal.scrollTop = 0;
     modal.showModal();
+    modal.scrollTop = 0;
+    $('activityDialogBody').scrollTop = 0;
   };
   modal.addEventListener('click', event => {if(event.target===modal)modal.close()});
   modal.addEventListener('close',()=>lastFocus?.focus());
