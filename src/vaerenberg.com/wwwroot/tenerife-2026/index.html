@@ -50,11 +50,11 @@ button.secondary{background:#e6f2ef;color:#125950}.cards{display:grid;grid-templ
 <h2 id="greeting">Welkom bij Tenerife Adventure Picker</h2>
 <div id="previewPersonPicker" hidden>
 <label>Preview als:<select id="person"></select></label>
-<label>Gezinscode (verouderde demo)<input id="pin" type="password"></label>
 </div>
+<input id="pin" type="hidden" value="">
 <p id="syncStatus" class="muted" role="status" aria-live="polite"></p>
 <div class="toolbar">
-<button data-tab="choices">✨ Mijn keuzes</button><button class="secondary" data-tab="results">📊 Resultaten</button><button class="secondary" data-tab="transfer">📤 Export/import</button>
+<button data-tab="choices">✨ Mijn keuzes</button><button class="secondary" data-tab="results">📊 Resultaten</button>
 </div>
 </section>
 <section id="choices" class="panel">
@@ -111,7 +111,7 @@ $('idea').value=r.idea||'';
 const types=role(who)==='gezin'?['Met opa en oma','Met de Soonsen','Alleen met ons gezin']:role(who)==='grootouders'?['Met het gezin','Liever af en toe aansluiten']:['Met de Vaerenbergs','Liever flexibel'];
 $('joint').innerHTML=types.map(v=>'<label style="display:inline-block;margin:8px"><input type="checkbox" value="'+esc(v)+'" '+(r.joint.includes(v)?'checked':'')+'> '+esc(v)+'</label>').join('');
 document.querySelectorAll('#joint input').forEach(c=>c.onchange=()=>{record().joint=Array.from(document.querySelectorAll('#joint input:checked')).map(v=>v.value);save()});}
-function drawResults(){if(connected){drawServerResults();return}const privileged=admin(),names=Object.keys(data).filter(n=>privileged||role(n)!=='gezin');$('scope').textContent=privileged?'Gezinsdemo: individuele lokale antwoorden zichtbaar.':'Gastdemo: alleen geaggregeerde antwoorden van externe gezelschappen voor gezamenlijke activiteiten. Geen individuele gezinsantwoorden.';const shared=['siam','medano','boat','snorkel','pool','dinner'];let html='<p>'+names.length+' lokaal beschikbare deelnemers</p>';
+function drawResults(){if(connected){drawServerResults();return}const privileged=admin(),names=Object.keys(data).filter(n=>privileged||role(n)!=='gezin');$('scope').textContent='Alleen de lokaal opgeslagen testgegevens zijn zichtbaar. Deze preview is niet verbonden met de centrale resultaten.';const shared=['siam','medano','boat','snorkel','pool','dinner'];let html='<p>'+names.length+' lokaal beschikbare deelnemers</p>';
 for(const [id,emoji,name] of ACTIVITIES){if(!privileged&&!shared.includes(id))continue;const votes=names.map(n=>[n,data[n]?.votes?.[id]]).filter(x=>x[1]);if(!votes.length)continue;const yes=votes.filter(x=>['love','like'].includes(x[1])).length;html+='<div class="result"><strong>'+emoji+' '+esc(name)+'</strong> — '+yes+'/'+votes.length+' enthousiast<div class="progress"><span style="width:'+(100*yes/votes.length)+'%"></span></div>'+(privileged?'<small>'+votes.map(x=>esc(x[0])+': '+esc(x[1])).join(' · ')+'</small>':'')+'</div>';}
 if(privileged){html+='<h3>Eigen ideeën</h3>';names.forEach(n=>{if(data[n]?.idea)html+='<p><strong>'+esc(n)+':</strong> '+esc(data[n].idea)+'</p>'})}$('overview').innerHTML=html;}
 function download(obj,filename){const url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
