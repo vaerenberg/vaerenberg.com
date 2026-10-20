@@ -1,6 +1,6 @@
 /* Activity details for the Tenerife Adventure Picker.
  * Prices are indicative (October 2026), not live quotes.
- * Wikimedia Commons images remain on Commons; click each photo for credits/licensing.
+ * Wikimedia Commons images remain on Commons; source and license links are listed separately.
  */
 (() => {
   'use strict';
