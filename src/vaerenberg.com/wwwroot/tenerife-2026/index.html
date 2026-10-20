@@ -47,11 +47,12 @@ button.secondary{background:#e6f2ef;color:#125950}.cards{display:grid;grid-templ
 <header><div>🌴 31 oktober – 9 november 2026</div><h1>Tenerife Adventure Picker</h1><p>Welke avonturen wil jij beleven? Kies vrijuit — niets ligt vast!</p></header>
 <main>
 <section class="panel">
-<div class="toolbar">
-<label>Wie ben jij?<br><select id="person"></select></label>
-<label>Gezinscode (demo)<br><input id="pin" type="password" placeholder="Alleen voor gezinsdashboard"></label>
+<h2 id="greeting">Welkom bij Tenerife Adventure Picker</h2>
+<div hidden>
+<label>Wie ben jij?<select id="person"></select></label>
+<label>Gezinscode (verouderde demo)<input id="pin" type="password"></label>
 </div>
-<p id="syncStatus" class="note">Demo: lokaal opgeslagen. Open een persoonlijke uitnodigingslink om centraal op te slaan.</p><p class="muted">Stem op activiteiten. Jouw antwoorden worden voorlopig alleen in deze browser bewaard.</p>
+<p id="syncStatus" class="muted" role="status" aria-live="polite"></p>
 <div class="toolbar">
 <button data-tab="choices">✨ Mijn keuzes</button><button class="secondary" data-tab="results">📊 Resultaten</button><button class="secondary" data-tab="transfer">📤 Export/import</button>
 </div>
@@ -91,11 +92,12 @@ window.TENERIFE_ACTIVITY_LIST=ACTIVITIES;
 const OPTIONS=[['love','🤩','Super'],['like','😊','Leuk'],['neutral','😐','Om het even'],['no','🙈','Liever niet']];
 const apiBase='/api/tenerife-2026';let params=new URLSearchParams(location.search);let apiToken=params.get('token')||sessionStorage.getItem('tenerife-token')||'';if(apiToken){sessionStorage.setItem('tenerife-token',apiToken);if(params.has('token')){params.delete('token');history.replaceState(null,'',location.pathname+(params.toString()?'?'+params:''));}}
 async function request(route,options={}){const response=await fetch(apiBase+route,{...options,headers:{'Authorization':'Bearer '+apiToken,'Content-Type':'application/json',...(options.headers||{})},cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);return response.status===204?null:response.json()}
-let connected=false;let syncTimer;async function sync(){if(!connected)return;try{await request('/me',{method:'PUT',body:JSON.stringify(record())});$('syncStatus').textContent='✓ Centraal opgeslagen'}catch{$('syncStatus').textContent='Opslaan mislukt; probeer opnieuw'}}
+let connected=false;let syncTimer;async function sync(){if(!connected)return;try{await request('/me',{method:'PUT',body:JSON.stringify(record())});$('syncStatus').textContent='✓ Opgeslagen'}catch{$('syncStatus').textContent='Opslaan mislukt; probeer opnieuw'}}
 const STORE='tenerife-adventure-picker-v1';let data={};try{data=JSON.parse(localStorage.getItem(STORE)||'{}')}catch{}
 let who=new URLSearchParams(location.search).get('person')||'Bart';if(!PEOPLE.some(x=>x[0]===who))who='Bart';
 let tab='choices';const $=id=>document.getElementById(id),role=n=>PEOPLE.find(p=>p[0]===n)?.[1]||'soonsen';
 const admin=()=>role(who)==='gezin'&&$('pin').value==='tenerife2026';
+const GROUP_LABELS={gezin:'Vaerenbergs',grootouders:'Grootouders',soonsen:'Soonsen'};
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function record(){return data[who]||(data[who]={votes:{},idea:'',joint:[]})}
 function save(){localStorage.setItem(STORE,JSON.stringify(data));if(connected){$('syncStatus').textContent='Opslaan…';clearTimeout(syncTimer);syncTimer=setTimeout(sync,500)}}
@@ -119,7 +121,7 @@ $('exportOne').onclick=()=>download({schema:STORE,people:{[who]:record()}},'tene
 $('exportAll').onclick=()=>{if(!admin())return alert('Selecteer eerst een gezinslid en voer de demo-gezinscode in.');download({schema:STORE,people:data},'tenerife-alle-antwoorden.json')};
 $('imports').onchange=async e=>{let count=0;for(const f of e.target.files){try{const doc=JSON.parse(await f.text());if(doc.schema!==STORE||!doc.people)continue;for(const [n,r]of Object.entries(doc.people)){if(!PEOPLE.some(p=>p[0]===n)||!r||typeof r!=='object')continue;let clean={votes:{},idea:String(r.idea||'').slice(0,1500),joint:Array.isArray(r.joint)?r.joint.filter(x=>typeof x==='string').slice(0,5):[]};for(const [id,value]of Object.entries(r.votes||{}))if(ACTIVITIES.some(a=>a[0]===id)&&OPTIONS.some(o=>o[0]===value))clean.votes[id]=value;data[n]=clean}count++}catch{}}save();$('importMessage').textContent=count+' bestand(en) verwerkt.';draw()};
 async function drawServerResults(){try{const result=await request('/results');if(result.scope==='family'){$('scope').textContent='Alle antwoorden van het eigen gezin en de andere gezelschappen.';$('overview').innerHTML=result.respondents.map(p=>'<div class="result"><strong>'+esc(p.name)+'</strong> ('+esc(p.group)+')<p>'+Object.entries(p.ballot.votes||{}).map(([k,v])=>esc(ACTIVITIES.find(a=>a[0]===k)?.[2]||k)+': '+esc(v)).join(' · ')+'</p><small>'+esc(p.ballot.idea||'')+'</small></div>').join('')}else{$('scope').textContent='Alleen samengevoegde stemmen van jouw gezelschap op gezamenlijke activiteiten.';$('overview').innerHTML=result.activities.map(a=>'<div class="result">'+esc(ACTIVITIES.find(x=>x[0]===a.activity)?.[2]||a.activity)+': '+a.positive+'/'+a.total+' enthousiast</div>').join('')}}catch{$('scope').textContent='Resultaten konden niet worden opgehaald.'}}
-(async()=>{if(apiToken){try{const me=await request('/me');who=me.name;data[who]=me.ballot||{votes:{},idea:'',joint:[]};connected=true;$('person').disabled=true;$('pin').closest('label').style.display='none';$('transfer').innerHTML='<h2>Gedeelde antwoorden</h2><p>Je antwoorden worden automatisch centraal opgeslagen. De persoonlijke uitnodigingslink is vertrouwelijk.</p>';$('syncStatus').textContent='✓ Verbonden als '+who;draw();return}catch{$('syncStatus').textContent='Uitnodiging ongeldig of opslag niet bereikbaar. Probeer later opnieuw.';document.getElementById('choices').innerHTML='<h2>Geen toegang</h2><p>De uitnodigingslink werkt momenteel niet. Vraag de organisator om een nieuwe link.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true);return}}document.getElementById('choices').innerHTML='<h2>Persoonlijke uitnodiging vereist</h2><p>Open de link die je van de organisator hebt ontvangen.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true)})();
+(async()=>{if(apiToken){try{const me=await request('/me');who=me.name;data[who]=me.ballot||{votes:{},idea:'',joint:[]};connected=true;$('greeting').textContent='Hallo '+me.name+' ('+(GROUP_LABELS[me.group]||me.group)+')!';$('person').disabled=true;$('transfer').innerHTML='<h2>Gedeelde antwoorden</h2><p>Je antwoorden worden automatisch centraal opgeslagen. De persoonlijke uitnodigingslink is vertrouwelijk.</p>';$('syncStatus').textContent='';draw();return}catch{$('syncStatus').textContent='Uitnodiging ongeldig of opslag niet bereikbaar. Probeer later opnieuw.';document.getElementById('choices').innerHTML='<h2>Geen toegang</h2><p>De uitnodigingslink werkt momenteel niet. Vraag de organisator om een nieuwe link.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true);return}}$('greeting').textContent='Persoonlijke uitnodiging vereist';document.getElementById('choices').innerHTML='<h2>Persoonlijke uitnodiging vereist</h2><p>Open de link die je van de organisator hebt ontvangen.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true)})();
 </script>
 <script src="/tenerife-2026/activity-details.js" defer></script>
 </body></html>
