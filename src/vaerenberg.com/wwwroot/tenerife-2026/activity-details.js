@@ -14,7 +14,7 @@
       location:'Siam Park, Costa Adeje', lat:28.0716, lon:-16.7265,
       price:'Toegang betalend — bekijk het actuele tarief op de ticketwebsite',
       duration:'Bij voorkeur een volledige dag',
-      description:'Groot waterpark met glijbanen, een golfslagbad en zones voor kleinere kinderen. We plannen dit bij voorkeur op een rustigere weekdag.',
+      description:'Groot waterpark met glijbanen, een golfslagbad en zones voor kleinere kinderen. Donderdag 5 november is de voorkeursdag, eventueel samen met de Soonsen; woensdag of vrijdag blijft een alternatief.',
       tips:['Reserveren op voorhand is verstandig; wachtrijen kunnen oplopen.','Controleer lengtebeperkingen per glijbaan en mogelijke Fast Pass-opties.','Neem zwemkleding, slippers en zonnebescherming mee.'],
       url:'https://www.siampark.net/',
       photos:[photo('A0455 Tenerife, Siam Park aerial view.jpg'),photo('A0461 Tenerife, Adeje and Siam Park aerial view.jpg')]
@@ -33,7 +33,7 @@
       price:'Veel wandelroutes gratis; vervoer en eventuele gids apart',
       duration:'Halve tot volledige dag',
       description:'Groene bergwereld met laurierbos, nevel en vergezichten. De route kan aangepast worden aan de kinderen en het weer.',
-      tips:['Smalle bochtige wegen kunnen wagenziekte uitlokken: kies een beperkte lus.','Het kan in Anaga koeler en natter zijn dan aan de zuidkust.','Controleer vooraf of een gekozen pad een reservatie of vergunning vereist.'],
+      tips:['Voor El Pijaral is een vergunning vereist; als die niet beschikbaar is, kies een vergunningsvrije gezinsroute bij Cruz del Carmen. Smalle bochtige wegen kunnen wagenziekte uitlokken.','Het kan in Anaga koeler en natter zijn dan aan de zuidkust.','Controleer vooraf of een gekozen pad een reservatie of vergunning vereist.'],
       url:'https://www.webtenerife.com/',
       photos:[photo('Laurisilva en Anaga.jpg'),photo('Bosque de laurisilva en Anaga.jpg')]
     },
@@ -42,7 +42,7 @@
       price:'Roques de García gratis; optionele kabelbaan is betalend (actuele tarieven bij aanbieder)',
       duration:'Halve tot volledige dag',
       description:'Vulkanisch landschap met indrukwekkende rotsformaties en uitzicht op de Teide. Je hoeft niet de kabelbaan te nemen om dit te beleven.',
-      tips:['De wegen zijn bochtig; plan stops en voldoende tijd vanwege wagenziekte.','Op hoogte kan het koud en winderig zijn.','Voor de kabelbaan gelden aparte tickets en soms toegangsregels voor routes nabij de top.'],
+      tips:['De wegen zijn bochtig; plan stops en voldoende tijd vanwege wagenziekte.','Vrijdag 6 november is een voorkeursdag. Een zonsondergang en sterren kijken kan als weer en energie van de kinderen het toelaten. Op hoogte kan het koud en winderig zijn.','Voor de kabelbaan gelden aparte tickets en soms toegangsregels voor routes nabij de top.'],
       url:'https://www.volcanoteide.com/es/teleferico_del_teide/tarifas_y_horarios',
       photos:[photo('Roques de García.jpg'),photo('Los Roques de García y el Teide 01.jpg')]
     },
@@ -51,7 +51,7 @@
       price:'Vrij wandelen doorgaans gratis',
       duration:'2–4 uur, afhankelijk van route',
       description:'Rustiger wandelgebied met donkere lavavelden, dennenbomen en vulkanische uitzichten.',
-      tips:['Kies een korte lus die haalbaar is voor de jongste kinderen.','Draag gesloten wandelschoenen op de lavapaden.','Er zijn weinig voorzieningen op de route: neem water en snacks mee.'],
+      tips:['Chinyero is een optionele keuzedag op zaterdag 7 november, niet nog een verplichte lange wandeling. Kies een korte lus die haalbaar is voor de jongste kinderen.','Draag gesloten wandelschoenen op de lavapaden.','Er zijn weinig voorzieningen op de route: neem water en snacks mee.'],
       url:'https://www.webtenerife.com/',
       photos:[photo('Chinyero y lavas.jpg'),photo('Chinyero volcano with view to Mount Teide on Tenerife, Spain (48225194316).jpg')]
     },
@@ -59,8 +59,8 @@
       location:'Puerto Colón, Costa Adeje (voorbeeldvertrekhaven)', lat:28.0784, lon:-16.7352,
       price:'Indicatief vanaf €25–35 per volwassene voor korte tochten; kinderen afhankelijk van aanbieder',
       duration:'Meestal 1,5–3 uur',
-      description:'Op zoek naar grienden en dolfijnen vanaf de zuidkust. Dieren spotten blijft natuurlijk nooit gegarandeerd.',
-      tips:['Zeeziekte is voor een aantal deelnemers een belangrijk aandachtspunt: overweeg een korte tocht op een stabieler schip.','Kies een erkende aanbieder die dieren respectvol benadert.','Het exacte vertrekpunt hangt af van de geboekte boot.'],
+      description:'Op zoek naar grienden en dolfijnen vanaf de zuidkust. Dit is géén vaste uitstap: alleen overwegen bij zeer rustige zee en als iedereen zin heeft. Dieren spotten blijft nooit gegarandeerd.',
+      tips:['Griet en de kinderen zijn gevoelig voor zeeziekte. Overweeg hoogstens een korte tocht van circa twee uur met toilet, schaduw en soepele annulering, en alleen bij rustige zee.','Kies een erkende aanbieder die dieren respectvol benadert.','Het exacte vertrekpunt hangt af van de geboekte boot.'],
       url:'https://www.webtenerife.com/',
       photos:[photo('Globicephala macrorhynchus Tenerife 2012 (cropped).jpg'),photo('Ballenas Tenerife.jpg')]
     },
@@ -86,7 +86,7 @@
       location:'Parque Nacional del Teide (indicatief)', lat:28.255, lon:-16.616,
       price:'Zelf sterren kijken gratis; gids of georganiseerde excursie extra',
       duration:'1–3 uur in de avond',
-      description:'Op heldere avonden kan de hoge ligging schitterende sterrenhemels opleveren, ver van de lichtvervuiling.',
+      description:'Sterren kijken is een optionele bonus na de Teide-uitstap, niet nog een vaste avondactiviteit. Op heldere avonden levert de hoge ligging schitterende sterrenhemels op.',
       tips:['In november kan het ’s avonds erg koud zijn op hoogte.','Rijd niet vermoeid terug over de bergwegen.','Check bewolking, maanstand en veilige parkeer-/uitkijklocaties.'],
       url:'https://www.volcanoteide.com/',
       photos:[photo('Milky way stack.jpg'),photo('Lightning and the Milky way.jpg')]
@@ -101,12 +101,12 @@
       photos:[photo('San Cristóbal de La Laguna.jpg'),photo('San Cristóbal de la Laguna (87506).jpg')]
     },
     pool: {
-      location:'Alborada Ocean Club, Costa del Silencio (te bevestigen)', lat:28.0085, lon:-16.644,
+      location:'Ona Alborada, Las Galletas (verblijf)', lat:28.0085, lon:-16.644,
       price:'Afhankelijk van verblijfsformule of eventuele dagtoegang; vooraf navragen',
       duration:'Enkele uren tot een dag',
-      description:'Een rustige zwembaddag zonder grote verplaatsing, ideaal als pauze tussen de uitstappen.',
+      description:'Een rustige zwembaddag bij onze uitvalsbasis in Ona Alborada, ideaal als ontspannen start en als pauze tussen uitstappen.',
       tips:['Controleer of het zwembad daadwerkelijk toegankelijk is voor jullie gezelschap.','Opening, onderhoud en eventuele toegangsprijzen kunnen veranderen.','De kaartpin is een indicatie van het complex, niet van een specifieke ingang.'],
-      url:'https://www.google.com/maps/search/?api=1&query=Alborada+Ocean+Club+Tenerife',
+      url:'https://www.google.com/maps/search/?api=1&query=Ona+Alborada+Las+Galletas',
       photos:[]
     },
     dinner: {
