@@ -48,4 +48,22 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7FEC08AA3BE14D24B1FCCEA1A87198CC }}
-          
+      
+      - name: Verify Tenerife page is live
+        shell: pwsh
+        run: |
+          $url = 'https://vaerenbergbvba.azurewebsites.net/tenerife-2026/index.html'
+          for ($i = 1; $i -le 12; $i++) {
+            try {
+              $response = Invoke-WebRequest -Uri $url -SkipHttpErrorCheck -TimeoutSec 20
+              Write-Host "Attempt $i : HTTP $($response.StatusCode)"
+              if ($response.StatusCode -eq 200 -and $response.Content -match 'Tenerife Adventure Picker') {
+                Write-Host 'Live deployment verified.'
+                exit 0
+              }
+            } catch {
+              Write-Warning "Attempt $i : $($_.Exception.Message)"
+            }
+            Start-Sleep -Seconds 10
+          }
+          throw 'Deployment reported success, but Tenerife page is not live at the Azure App Service URL.'
