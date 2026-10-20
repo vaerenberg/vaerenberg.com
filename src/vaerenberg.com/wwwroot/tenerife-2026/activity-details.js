@@ -62,7 +62,7 @@
       description:'Op zoek naar grienden en dolfijnen vanaf de zuidkust. Dieren spotten blijft natuurlijk nooit gegarandeerd.',
       tips:['Zeeziekte is voor een aantal deelnemers een belangrijk aandachtspunt: overweeg een korte tocht op een stabieler schip.','Kies een erkende aanbieder die dieren respectvol benadert.','Het exacte vertrekpunt hangt af van de geboekte boot.'],
       url:'https://www.webtenerife.com/',
-      photos:[photo('Tenerife cristianos puerto E.jpg'),photo('Los Cristianos.jpg')]
+      photos:[photo('Globicephala macrorhynchus Tenerife 2012 (cropped).jpg'),photo('Ballenas Tenerife.jpg')]
     },
     snorkel: {
       location:'Playa de las Vistas, Los Cristianos (mogelijke locatie)', lat:28.0534, lon:-16.7255,
@@ -131,7 +131,10 @@
     $('activityDialogBody').innerHTML=
       '<p>'+safe(d.description)+'</p>'+
       (d.photos.length?'<div class="detail-gallery">'+d.photos.map(p=>
-        '<img src="'+p.src+'" loading="lazy" alt="'+safe(p.label)+'" referrerpolicy="no-referrer">').join('')+'</div>'
+        '<img src="'+p.src+'" loading="lazy" alt="'+safe(p.label)+'" referrerpolicy="no-referrer">').join('')+'</div>'+
+        '<details class="detail-credits"><summary>Fotobronnen en licenties</summary><ul>'+
+        d.photos.map(p=>'<li><a href="'+p.credit+'" target="_blank" rel="noopener noreferrer">'+safe(p.label)+'</a> — Wikimedia Commons</li>').join('')+
+        '</ul></details>'
         :'<p class="detail-hint">Voor deze nog niet vastgelegde activiteit zijn er geen specifieke foto’s geselecteerd.</p>')+
       '<div class="detail-facts"><div><strong>💶 Prijs</strong><p>'+safe(d.price)+'</p></div>'+
       '<div><strong>⏱️ Tijdsduur</strong><p>'+safe(d.duration)+'</p></div></div>'+
