@@ -30,18 +30,18 @@ button.secondary{background:#e6f2ef;color:#125950}.cards{display:grid;grid-templ
 <section class="panel">
 <div class="toolbar">
 <label>Wie ben jij?<br><select id="person"></select></label>
-<label>Gezinscode (demo)<br><input id="pin" type="password" placeholder="Alleen voor gezinsdashboard"></label>
+<label hidden>Gezinscode (verouderde demo)<br><input id="pin" type="password" placeholder="Niet gebruikt"></label>
 </div>
-<p id="syncStatus" class="note">Demo: lokaal opgeslagen. Open een persoonlijke uitnodigingslink om centraal op te slaan.</p><p class="muted">Stem op activiteiten. Jouw antwoorden worden voorlopig alleen in deze browser bewaard.</p>
+<p id="syncStatus" class="note">Persoonlijke uitnodiging wordt gecontroleerd…</p><p class="muted">Geef jouw voorkeuren door. Met een geldige uitnodiging worden je antwoorden automatisch centraal bewaard.</p>
 <div class="toolbar">
-<button data-tab="choices">✨ Mijn keuzes</button><button class="secondary" data-tab="results">📊 Resultaten</button><button class="secondary" data-tab="transfer">📤 Export/import</button>
+<button data-tab="choices">✨ Mijn keuzes</button><button class="secondary" data-tab="results">📊 Resultaten</button>
 </div>
 </section>
 <section id="choices" class="panel">
 <h2>Wat lijkt jou leuk?</h2><div id="cards" class="cards"></div>
 <h3>💡 Heb je nog een eigen idee?</h3><textarea id="idea" placeholder="Jouw voorstel..."></textarea>
 <h3>Met wie wil je graag iets doen?</h3><div id="joint"></div>
-<p class="note">Dit is een lokale demo. Individuele links, centrale opslag en veilige rechten volgen in de backendversie.</p>
+<p class="muted">Je kunt je voorkeuren op elk moment aanpassen. Je wijzigingen worden automatisch opgeslagen.</p>
 </section>
 <section id="results" class="panel hide"><h2>📊 Voorkeuren</h2><p id="scope" class="note"></p><div id="overview"></div></section>
 <section id="transfer" class="panel hide"><h2>📤 Antwoorden delen</h2>
