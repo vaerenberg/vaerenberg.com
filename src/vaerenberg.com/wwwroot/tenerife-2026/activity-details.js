@@ -39,7 +39,7 @@
     },
     teide: {
       location:'Roques de García / Mirador de La Ruleta', lat:28.2248, lon:-16.6318,
-      price:'Roques de García gratis; optionele kabelbaan vanaf €42 per niet-residente volwassene (retour)',
+      price:'Roques de García gratis; optionele kabelbaan is betalend (actuele tarieven bij aanbieder)',
       duration:'Halve tot volledige dag',
       description:'Vulkanisch landschap met indrukwekkende rotsformaties en uitzicht op de Teide. Je hoeft niet de kabelbaan te nemen om dit te beleven.',
       tips:['De wegen zijn bochtig; plan stops en voldoende tijd vanwege wagenziekte.','Op hoogte kan het koud en winderig zijn.','Voor de kabelbaan gelden aparte tickets en soms toegangsregels voor routes nabij de top.'],
@@ -71,7 +71,7 @@
       description:'De onderwaterwereld ontdekken in een beschutte baai of tijdens een begeleide activiteit.',
       tips:['Kies een rustige plek en beoordeel de zeecondities ter plaatse.','Een begeleide sessie kan prettiger zijn voor kinderen zonder snorkelervaring.','De aangeduide locatie is een suggestie, geen vastgelegde excursie.'],
       url:'https://www.webtenerife.com/',
-      photos:[photo('Los Cristianos.jpg')]
+      photos:[photo('Los Cristianos.jpg'),photo('El Medano - Beach.jpg')]
     },
     kayak: {
       location:'Los Cristianos (voorbeeldvertrekpunt)', lat:28.0484, lon:-16.7207,
@@ -80,7 +80,7 @@
       description:'Met een kajak langs de kust, alleen als de zee rustig is en de aanbieder geschikte kinderopties heeft.',
       tips:['Controleer minimumleeftijd en zwemvaardigheid vooraf.','Zeeziekte en golfslag kunnen de ervaring minder aangenaam maken.','Kies een begeleide tour en laat de weersomstandigheden beslissen.'],
       url:'https://www.webtenerife.com/',
-      photos:[photo('Tenerife cristianos puerto B.jpg')]
+      photos:[photo('Tenerife cristianos puerto B.jpg'),photo('Tenerife cristianos puerto E.jpg')]
     },
     stars: {
       location:'Parque Nacional del Teide (indicatief)', lat:28.255, lon:-16.616,
@@ -89,7 +89,7 @@
       description:'Op heldere avonden kan de hoge ligging schitterende sterrenhemels opleveren, ver van de lichtvervuiling.',
       tips:['In november kan het ’s avonds erg koud zijn op hoogte.','Rijd niet vermoeid terug over de bergwegen.','Check bewolking, maanstand en veilige parkeer-/uitkijklocaties.'],
       url:'https://www.volcanoteide.com/',
-      photos:[photo('Roques de García Teide Tenerife.jpg')]
+      photos:[photo('Roques de García Teide Tenerife.jpg'),photo('Tenerife Roques de Garcia.JPG')]
     },
     laguna: {
       location:'Historisch centrum San Cristóbal de La Laguna', lat:28.488, lon:-16.315,
