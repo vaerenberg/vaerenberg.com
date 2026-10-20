@@ -96,7 +96,28 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.
 $('exportOne').onclick=()=>download({schema:STORE,people:{[who]:record()}},'tenerife-'+who.replaceAll(' ','-')+'.json');
 $('exportAll').onclick=()=>{if(!admin())return alert('Selecteer eerst een gezinslid en voer de demo-gezinscode in.');download({schema:STORE,people:data},'tenerife-alle-antwoorden.json')};
 $('imports').onchange=async e=>{let count=0;for(const f of e.target.files){try{const doc=JSON.parse(await f.text());if(doc.schema!==STORE||!doc.people)continue;for(const [n,r]of Object.entries(doc.people)){if(!PEOPLE.some(p=>p[0]===n)||!r||typeof r!=='object')continue;let clean={votes:{},idea:String(r.idea||'').slice(0,1500),joint:Array.isArray(r.joint)?r.joint.filter(x=>typeof x==='string').slice(0,5):[]};for(const [id,value]of Object.entries(r.votes||{}))if(ACTIVITIES.some(a=>a[0]===id)&&OPTIONS.some(o=>o[0]===value))clean.votes[id]=value;data[n]=clean}count++}catch{}}save();$('importMessage').textContent=count+' bestand(en) verwerkt.';draw()};
-async function drawServerResults(){try{const result=await request('/results');if(result.scope==='family'){$('scope').textContent='Alle antwoorden van het eigen gezin en de andere gezelschappen.';$('overview').innerHTML=result.respondents.map(p=>'<div class="result"><strong>'+esc(p.name)+'</strong> ('+esc(p.group)+')<p>'+Object.entries(p.ballot.votes||{}).map(([k,v])=>esc(ACTIVITIES.find(a=>a[0]===k)?.[2]||k)+': '+esc(v)).join(' · ')+'</p><small>'+esc(p.ballot.idea||'')+'</small></div>').join('')}else{$('scope').textContent='Alleen samengevoegde stemmen van jouw gezelschap op gezamenlijke activiteiten.';$('overview').innerHTML=result.activities.map(a=>'<div class="result">'+esc(ACTIVITIES.find(x=>x[0]===a.activity)?.[2]||a.activity)+': '+a.positive+'/'+a.total+' enthousiast</div>').join('')}}catch{$('scope').textContent='Resultaten konden niet worden opgehaald.'}}
+async function drawServerResults(){
+try{
+const result=await request('/results');
+if(result.scope==='family'){
+$('scope').textContent='Alle ingevulde antwoorden van het gezin en de andere gezelschappen.';
+$('overview').innerHTML=result.respondents.map(p=>{
+const votes=Object.entries(p.ballot.votes||{}).map(([k,v])=>esc(ACTIVITIES.find(a=>a[0]===k)?.[2]||k)+': '+esc(OPTIONS.find(o=>o[0]===v)?.[2]||v)).join(' · ');
+const joint=Array.isArray(p.ballot.joint)?p.ballot.joint:[];
+return '<div class="result"><strong>'+esc(p.name)+'</strong> ('+esc(p.group)+')'
++(votes?'<p>'+votes+'</p>':'')
++(joint.length?'<p><strong>Met wie?</strong> '+joint.map(esc).join(' · ')+'</p>':'')
++(p.ballot.idea?'<p><strong>Eigen idee:</strong> '+esc(p.ballot.idea)+'</p>':'')
++'</div>';
+}).join('')||'<p>Er zijn nog geen antwoorden.</p>';
+}else{
+$('scope').textContent='Samengevoegde antwoorden van jouw gezelschap. Er worden geen individuele namen of antwoorden getoond.';
+const activities=(result.activities||[]).map(a=>'<div class="result">'+esc(ACTIVITIES.find(x=>x[0]===a.activity)?.[2]||a.activity)+': '+a.positive+'/'+a.total+' enthousiast</div>').join('');
+const joint=(result.joint||[]).map(j=>'<div class="result">'+esc(j.option)+': '+j.count+' deelnemer(s)</div>').join('');
+$('overview').innerHTML=activities+'<h3>Met wie wil je graag iets doen?</h3>'+(joint||'<p>Nog geen voorkeuren.</p>');
+}
+}catch{$('scope').textContent='Resultaten konden niet worden opgehaald.';$('overview').innerHTML='';}
+}
 (async()=>{if(apiToken){try{const me=await request('/me');who=me.name;data[who]=me.ballot||{votes:{},idea:'',joint:[]};connected=true;$('person').disabled=true;$('pin').closest('label').style.display='none';$('transfer').innerHTML='<h2>Gedeelde antwoorden</h2><p>Je antwoorden worden automatisch centraal opgeslagen. De persoonlijke uitnodigingslink is vertrouwelijk.</p>';$('syncStatus').textContent='✓ Verbonden als '+who;draw();return}catch{$('syncStatus').textContent='Uitnodiging ongeldig of opslag niet bereikbaar. Probeer later opnieuw.';document.getElementById('choices').innerHTML='<h2>Geen toegang</h2><p>De uitnodigingslink werkt momenteel niet. Vraag de organisator om een nieuwe link.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true);return}}document.getElementById('choices').innerHTML='<h2>Persoonlijke uitnodiging vereist</h2><p>Open de link die je van de organisator hebt ontvangen.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true)})();
 </script>
 </body></html>
