@@ -1,0 +1,21 @@
+.map-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.map-heading h2{margin:0}
+.map-picker{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0;font-weight:650}
+.map-picker select{flex:1;min-width:0;background:#fff;color:#17413c;font-weight:400}
+.map-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:start}
+.activity-overview-map{height:520px;min-width:0;border:1px solid #c9dcd7;border-radius:15px;background:#dceff2;isolation:isolate;z-index:0}
+.activity-overview-map:focus-visible,.activity-marker:focus-visible{outline:3px solid #046768;outline-offset:4px}
+.activity-overview-map .leaflet-control-attribution{font-size:10px}
+.activity-overview-map .leaflet-control-zoom a{color:#125950}
+.activity-marker{background:none;border:0}
+.map-pin{position:relative;display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:3px solid #fff;border-radius:50%;background:#fff;box-shadow:0 2px 10px #003d4c44;font-size:26px;line-height:1}
+.map-pin.has-vote{background:#b9e6b1}
+.map-pin.is-selected{outline:3px solid #17413c;outline-offset:3px}
+.map-vote-badge{position:absolute;right:-8px;top:-9px;display:flex;align-items:center;justify-content:center;width:23px;height:23px;border:2px solid #fff;border-radius:50%;background:#d9f1eb;font-size:15px}
+.map-selection{min-width:0}
+.map-selection-status{margin:0 0 12px;padding:12px;border-radius:12px;background:#edf6f1;font-size:.9rem}
+.map-selection .card{background:#fff}
+.map-selection .emoji{font-size:44px;padding:10px}
+.map-selection>p:last-child{font-size:.84rem;line-height:1.5}
+@media(max-width:760px){.map-layout{grid-template-columns:1fr}.activity-overview-map{height:430px}.map-selection .card{max-width:none}}
+@media(max-width:400px){.activity-overview-map{height:370px}.map-heading button{font-size:.85rem}}

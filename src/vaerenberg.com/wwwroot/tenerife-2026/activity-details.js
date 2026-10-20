@@ -65,7 +65,7 @@
       photos:[photo('Chinyero y lavas.jpg'),photo('Chinyero volcano with view to Mount Teide on Tenerife, Spain (48225194316).jpg')]
     },
     boat: {
-      location:'Puerto Colón, Costa Adeje (voorbeeldvertrekhaven)', lat:28.0784, lon:-16.7352,
+      location:'Voor de kust van Costa Adeje, bij Puerto Colón (indicatieve locatie)', lat:28.0784, lon:-16.7400,
       price:'Indicatief vanaf €25–35 per volwassene voor korte tochten; kinderen afhankelijk van aanbieder',
       duration:'Meestal 1,5–3 uur',
       description:'Op zoek naar grienden en dolfijnen vanaf de zuidkust. Dit is géén vaste uitstap: alleen overwegen bij zeer rustige zee en als iedereen zin heeft. Dieren spotten blijft nooit gegarandeerd.',
@@ -74,7 +74,7 @@
       photos:[photo('Globicephala macrorhynchus Tenerife 2012 (cropped).jpg'),photo('Ballenas Tenerife.jpg')]
     },
     snorkel: {
-      location:'Playa de las Vistas, Los Cristianos (mogelijke locatie)', lat:28.0534, lon:-16.7255,
+      location:'Aan de kust bij Los Cristianos (mogelijke snorkellocatie)', lat:28.0455, lon:-16.7155,
       price:'Gratis met eigen materiaal; begeleide excursie of huur extra',
       duration:'1–3 uur',
       description:'De onderwaterwereld ontdekken in een beschutte baai of tijdens een begeleide activiteit.',
@@ -86,7 +86,7 @@
       ]
     },
     kayak: {
-      location:'Los Cristianos (voorbeeldvertrekpunt)', lat:28.0484, lon:-16.7207,
+      location:'Aan de kust bij Los Cristianos (mogelijke kajaklocatie)', lat:28.0450, lon:-16.7180,
       price:'Afhankelijk van gids, duur en materiaalhuur',
       duration:'Doorgaans 1,5–3 uur',
       description:'Met een kajak langs de kust, alleen als de zee rustig is en de aanbieder geschikte kinderopties heeft.',
@@ -128,10 +128,10 @@
       ]
     },
     dinner: {
-      location:'Nog te kiezen — zuidkust van Tenerife (indicatieve kaartlocatie)', lat:28.062, lon:-16.730,
+      location:'Costa del Silencio (restaurant nog te kiezen)', lat:28.0078, lon:-16.6439,
       price:'Afhankelijk van restaurant en groepsgrootte',
       duration:'1–3 uur',
-      description:'Een gezamenlijke lunch of avond met de familie en vrienden. De precieze locatie kiezen we later samen.',
+      description:'Een gezamenlijke lunch of avond met de familie en vrienden in Costa del Silencio. Het restaurant kiezen we later samen.',
       tips:['Reserveer voor een grotere groep bij voorkeur vooraf.','Kies een kindvriendelijke plaats met genoeg keuze.','De kaartpin toont alleen een zoekgebied, geen gereserveerd restaurant.'],
       url:'https://www.google.com/maps/search/?api=1&query=restaurants+Costa+Adeje+Tenerife',
       photos:[
@@ -140,6 +140,7 @@
       ]
     }
   };
+  window.TENERIFE_ACTIVITY_LOCATIONS = Object.entries(D).map(([id, detail]) => ({id, lat:detail.lat, lon:detail.lon, location:detail.location}));
   const $ = id => document.getElementById(id);
   const modal = $('activityDialog');
   const safe = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;',"'":'&#39;'}[char]));
