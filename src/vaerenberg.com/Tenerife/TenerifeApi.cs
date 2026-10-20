@@ -97,7 +97,14 @@ public static class TenerifeApi
                     positive=grouped.Count(p=>p.Ballot.Votes.TryGetValue(a,out var v)&&(v=="love"||v=="like")),
                     total=grouped.Count(p=>p.Ballot.Votes.ContainsKey(a))
                 }).ToArray();
-                return Results.Ok(new {scope="guest",group=me.Group,activities=aggregate});
+                var jointOptions = me.Group == "grootouders"
+                    ? new[] { "Met het gezin", "Liever af en toe aansluiten" }
+                    : new[] { "Met de Vaerenbergs", "Liever flexibel" };
+                var joint = jointOptions.Select(option => new {
+                    option,
+                    count = grouped.Count(p => p.Ballot.Joint?.Contains(option) == true)
+                }).ToArray();
+                return Results.Ok(new {scope="guest",group=me.Group,activities=aggregate,joint,respondents=grouped.Length});
             } catch(Exception ex) {
                 app.Logger.LogError(ex,"Tenerife results failed");
                 return Results.Problem("Storage temporarily unavailable",statusCode:503);
