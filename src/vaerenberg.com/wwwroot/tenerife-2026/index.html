@@ -21,6 +21,25 @@ button.secondary{background:#e6f2ef;color:#125950}.cards{display:grid;grid-templ
 .muted{color:#617e77}.hide{display:none}.note{background:#fff5df;padding:12px;border-left:4px solid #de9b3d;border-radius:7px}
 .progress{height:9px;border-radius:10px;background:#e2efea;overflow:hidden}.progress span{display:block;height:100%;background:#16a38d}
 .result{border-bottom:1px solid #e4eeea;padding:13px 0}
+.details-button{font-size:.9rem;padding:9px 12px;background:#d9f1eb;color:#125950;align-self:flex-start}
+.activity-dialog{border:0;border-radius:18px;padding:0;width:min(92vw,710px);max-height:88dvh;box-shadow:0 22px 80px #001c1d66;color:#17413c}
+.activity-dialog::backdrop{background:#0b282caa}
+.detail-header{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;background:#fff;border-bottom:1px solid #e2efea}
+.detail-header h2{margin:0;font-size:1.3rem}
+.detail-close{width:40px;height:40px;flex-shrink:0}
+.detail-body{padding:4px 20px 22px;overflow-wrap:anywhere}
+.detail-body h3{margin:20px 0 8px}
+.detail-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:16px 0}
+.detail-gallery a{text-decoration:none;color:#39615c;font-size:.8rem}
+.detail-gallery img{display:block;width:100%;height:165px;object-fit:cover;background:#edf6f1;border-radius:10px}
+.detail-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.detail-facts>div{background:#edf6f1;border-radius:12px;padding:12px}
+.detail-facts p{margin:6px 0 0}
+.detail-map{width:100%;height:230px;border:1px solid #dce9e4;border-radius:12px}
+.detail-links a{color:#046768}
+.detail-hint{font-size:.84rem;color:#617e77}
+.detail-body li{margin:7px 0}
+
 @media(max-width:500px){.panel{padding:15px}.cards{grid-template-columns:1fr}}
 </style>
 </head>
@@ -51,6 +70,7 @@ button.secondary{background:#e6f2ef;color:#125950}.cards{display:grid;grid-templ
 <p class="note">Privacywaarschuwing: deze demo bevat geen echte authenticatie. De gezinscode staat in de broncode en lokale gegevens kunnen technisch worden ingezien. Gebruik voor publieke links pas de volgende, server-side beveiligde versie.</p>
 </section>
 </main>
+<dialog id="activityDialog" class="activity-dialog" aria-labelledby="activityDialogTitle"><div class="detail-header"><h2 id="activityDialogTitle"></h2><button id="activityDialogClose" class="detail-close" type="button" aria-label="Sluiten">✕</button></div><div id="activityDialogBody" class="detail-body"></div></dialog>
 <script>
 const PEOPLE=[['Bart','gezin'],['Griet','gezin'],['Jorijn','gezin'],['Nienke','gezin'],['Marie','gezin'],['Opa','grootouders'],['Oma','grootouders'],['Soonsen ouder 1','soonsen'],['Soonsen ouder 2','soonsen'],['Soonsen dochter 1','soonsen'],['Soonsen dochter 2','soonsen'],['Soonsen oma','soonsen']];
 const ACTIVITIES=[
@@ -67,6 +87,7 @@ const ACTIVITIES=[
 ['pool','🏊','Zwembad Alborada','Een heerlijke relaxdag dicht bij huis.'],
 ['dinner','🍽️','Samen eten','Een gezellige lunch of avond met vrienden of grootouders.']
 ];
+window.TENERIFE_ACTIVITY_LIST=ACTIVITIES;
 const OPTIONS=[['love','🤩','Super'],['like','😊','Leuk'],['neutral','😐','Om het even'],['no','🙈','Liever niet']];
 const apiBase='/api/tenerife-2026';let params=new URLSearchParams(location.search);let apiToken=params.get('token')||sessionStorage.getItem('tenerife-token')||'';if(apiToken){sessionStorage.setItem('tenerife-token',apiToken);if(params.has('token')){params.delete('token');history.replaceState(null,'',location.pathname+(params.toString()?'?'+params:''));}}
 async function request(route,options={}){const response=await fetch(apiBase+route,{...options,headers:{'Authorization':'Bearer '+apiToken,'Content-Type':'application/json',...(options.headers||{})},cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);return response.status===204?null:response.json()}
@@ -81,8 +102,9 @@ function save(){localStorage.setItem(STORE,JSON.stringify(data));if(connected){$
 function draw(){ $('person').innerHTML=PEOPLE.map(p=>'<option value="'+esc(p[0])+'" '+(who===p[0]?'selected':'')+'>'+esc(p[0])+'</option>').join('');
 for(const id of ['choices','results','transfer'])$(id).classList.toggle('hide',tab!==id);
 if(tab==='choices')drawChoices();if(tab==='results')drawResults();}
-function drawChoices(){let r=record();$('cards').innerHTML=ACTIVITIES.map(([id,emoji,name,desc])=>'<article class="card"><div class="emoji">'+emoji+'</div><strong>'+esc(name)+'</strong><span class="muted">'+esc(desc)+'</span><div class="vote">'+OPTIONS.map(([value,em,label])=>'<button data-act="'+id+'" data-value="'+value+'" class="'+(r.votes[id]===value?'selected':'')+'" aria-label="'+esc(label+' voor '+name)+'">'+em+'<small>'+label+'</small></button>').join('')+'</div></article>').join('');
+function drawChoices(){let r=record();$('cards').innerHTML=ACTIVITIES.map(([id,emoji,name,desc])=>'<article class="card"><div class="emoji">'+emoji+'</div><strong>'+esc(name)+'</strong><span class="muted">'+esc(desc)+'</span><button class="details-button" type="button" data-detail="'+id+'" aria-label="Meer informatie over '+esc(name)+'">ⓘ Meer info</button><div class="vote">'+OPTIONS.map(([value,em,label])=>'<button data-act="'+id+'" data-value="'+value+'" class="'+(r.votes[id]===value?'selected':'')+'" aria-label="'+esc(label+' voor '+name)+'">'+em+'<small>'+label+'</small></button>').join('')+'</div></article>').join('');
 document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{record().votes[b.dataset.act]=b.dataset.value;save();drawChoices()});
+document.querySelectorAll('[data-detail]').forEach(b=>b.onclick=()=>window.openTenerifeDetails?.(b.dataset.detail));
 $('idea').value=r.idea||'';
 const types=role(who)==='gezin'?['Met opa en oma','Met de Soonsen','Alleen met ons gezin']:role(who)==='grootouders'?['Met het gezin','Liever af en toe aansluiten']:['Met de Vaerenbergs','Liever flexibel'];
 $('joint').innerHTML=types.map(v=>'<label style="display:inline-block;margin:8px"><input type="checkbox" value="'+esc(v)+'" '+(r.joint.includes(v)?'checked':'')+'> '+esc(v)+'</label>').join('');
@@ -99,4 +121,5 @@ $('imports').onchange=async e=>{let count=0;for(const f of e.target.files){try{c
 async function drawServerResults(){try{const result=await request('/results');if(result.scope==='family'){$('scope').textContent='Alle antwoorden van het eigen gezin en de andere gezelschappen.';$('overview').innerHTML=result.respondents.map(p=>'<div class="result"><strong>'+esc(p.name)+'</strong> ('+esc(p.group)+')<p>'+Object.entries(p.ballot.votes||{}).map(([k,v])=>esc(ACTIVITIES.find(a=>a[0]===k)?.[2]||k)+': '+esc(v)).join(' · ')+'</p><small>'+esc(p.ballot.idea||'')+'</small></div>').join('')}else{$('scope').textContent='Alleen samengevoegde stemmen van jouw gezelschap op gezamenlijke activiteiten.';$('overview').innerHTML=result.activities.map(a=>'<div class="result">'+esc(ACTIVITIES.find(x=>x[0]===a.activity)?.[2]||a.activity)+': '+a.positive+'/'+a.total+' enthousiast</div>').join('')}}catch{$('scope').textContent='Resultaten konden niet worden opgehaald.'}}
 (async()=>{if(apiToken){try{const me=await request('/me');who=me.name;data[who]=me.ballot||{votes:{},idea:'',joint:[]};connected=true;$('person').disabled=true;$('pin').closest('label').style.display='none';$('transfer').innerHTML='<h2>Gedeelde antwoorden</h2><p>Je antwoorden worden automatisch centraal opgeslagen. De persoonlijke uitnodigingslink is vertrouwelijk.</p>';$('syncStatus').textContent='✓ Verbonden als '+who;draw();return}catch{$('syncStatus').textContent='Uitnodiging ongeldig of opslag niet bereikbaar. Probeer later opnieuw.';document.getElementById('choices').innerHTML='<h2>Geen toegang</h2><p>De uitnodigingslink werkt momenteel niet. Vraag de organisator om een nieuwe link.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true);return}}document.getElementById('choices').innerHTML='<h2>Persoonlijke uitnodiging vereist</h2><p>Open de link die je van de organisator hebt ontvangen.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true)})();
 </script>
+<script src="/tenerife-2026/activity-details.js" defer></script>
 </body></html>
