@@ -41,8 +41,7 @@ public static class TenerifeApi
     public static void MapTenerifeApi(this WebApplication app)
     {
         var api = app.MapGroup("/api/tenerife-2026");
-        // Only the Development environment exposes a tokenless preview capability.
-        // Never map this endpoint for staging or production.
+        // Preview capability is never registered outside Development.
         if (app.Environment.IsDevelopment())
             api.MapGet("/preview-enabled", () => Results.Ok(new { enabled = true }));
         api.AddEndpointFilter(async (context, next) => { context.HttpContext.Response.Headers.CacheControl = "no-store"; return await next(context); });
@@ -101,7 +100,14 @@ public static class TenerifeApi
                     positive=grouped.Count(p=>p.Ballot.Votes.TryGetValue(a,out var v)&&(v=="love"||v=="like")),
                     total=grouped.Count(p=>p.Ballot.Votes.ContainsKey(a))
                 }).ToArray();
-                return Results.Ok(new {scope="guest",group=me.Group,activities=aggregate});
+                var jointOptions = me.Group == "grootouders"
+                    ? new[] { "Met het gezin", "Liever af en toe aansluiten" }
+                    : new[] { "Met de Vaerenbergs", "Liever flexibel" };
+                var joint = jointOptions.Select(option => new {
+                    option,
+                    count = grouped.Count(p => p.Ballot.Joint?.Contains(option) == true)
+                }).ToArray();
+                return Results.Ok(new {scope="guest",group=me.Group,activities=aggregate,joint,respondents=grouped.Length});
             } catch(Exception ex) {
                 app.Logger.LogError(ex,"Tenerife results failed");
                 return Results.Problem("Storage temporarily unavailable",statusCode:503);
