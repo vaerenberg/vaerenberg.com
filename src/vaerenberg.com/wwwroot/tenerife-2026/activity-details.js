@@ -4,10 +4,13 @@
  */
 (() => {
   'use strict';
-  const photo = filename => ({
-    src: 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(filename) + '?width=850',
+  const photoUrl = (filename, width) => 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(filename) + '?width=' + width;
+  const photo = (filename, label = filename.replace(/\.[^.]+$/, '').replaceAll('_', ' '), attribution = '') => ({
+    src: photoUrl(filename, 960),
+    srcset: [330, 960, 1280].map(width => photoUrl(filename, width) + ' ' + width + 'w').join(', '),
     credit: 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(filename),
-    label: filename.replace(/\.[^.]+$/, '').replaceAll('_', ' ')
+    label,
+    attribution
   });
   const D = {
     siam: {
@@ -17,7 +20,10 @@
       description:'Groot waterpark met glijbanen, een golfslagbad en zones voor kleinere kinderen. Donderdag 5 november is de voorkeursdag, eventueel samen met de Soonsen; woensdag of vrijdag blijft een alternatief.',
       tips:['Reserveren op voorhand is verstandig; wachtrijen kunnen oplopen.','Controleer lengtebeperkingen per glijbaan en mogelijke Fast Pass-opties.','Neem zwemkleding, slippers en zonnebescherming mee.'],
       url:'https://www.siampark.net/',
-      photos:[photo('A0455 Tenerife, Siam Park aerial view.jpg'),photo('A0461 Tenerife, Adeje and Siam Park aerial view.jpg')]
+      photos:[
+        {src:'images/siam-park-tube-slide.jpg',label:'Met een tweepersoonsband uit een groene glijbaan in Siam Park'},
+        {src:'images/siam-park-tower-slide.jpg',label:'Een bezoeker op de steile waterglijbaan in Siam Park'}
+      ]
     },
     medano: {
       location:'Playa El Médano', lat:28.0437, lon:-16.5375,
@@ -26,7 +32,10 @@
       description:'Ontspannen stranddag in een levendig kustplaatsje, met een boulevard, cafés en uitzicht op Montaña Roja.',
       tips:['Het kan er behoorlijk waaien: neem een extra laagje mee.','Geschikt om flexibel met verschillende gezelschappen af te spreken.','Houd rekening met golven en de wind als kinderen gaan zwemmen.'],
       url:'https://www.webtenerife.com/',
-      photos:[photo('ES7020049 Tenerife Montaña Roja, playa de El Médano.jpg'),photo('Montaña roja desde el Medano.jpg')]
+      photos:[
+        {src:'images/el-medano-promenade.jpg',label:'De boulevard van El Médano met kleurrijke gebouwen en het strand'},
+        {src:'images/el-medano-beach.jpg',label:'Het zandstrand bij El Médano met uitzicht op Montaña Roja'}
+      ]
     },
     anaga: {
       location:'Cruz del Carmen, Parque Rural de Anaga (voorbeeldstartpunt)', lat:28.5323, lon:-16.2799,
@@ -71,7 +80,10 @@
       description:'De onderwaterwereld ontdekken in een beschutte baai of tijdens een begeleide activiteit.',
       tips:['Kies een rustige plek en beoordeel de zeecondities ter plaatse.','Een begeleide sessie kan prettiger zijn voor kinderen zonder snorkelervaring.','De aangeduide locatie is een suggestie, geen vastgelegde excursie.'],
       url:'https://www.webtenerife.com/',
-      photos:[photo('Los Cristianos.jpg'),photo('ES7020049 Tenerife Montaña Roja, playa de El Médano.jpg')]
+      photos:[
+        {src:'images/snorkel-fish.jpg',label:'Een snorkelaar tussen kleurrijke vissen in helder zeewater'},
+        {src:'images/snorkel-turtle.jpg',label:'Snorkelaars bij een zeeschildpad onder water'}
+      ]
     },
     kayak: {
       location:'Los Cristianos (voorbeeldvertrekpunt)', lat:28.0484, lon:-16.7207,
@@ -80,7 +92,10 @@
       description:'Met een kajak langs de kust, alleen als de zee rustig is en de aanbieder geschikte kinderopties heeft.',
       tips:['Controleer minimumleeftijd en zwemvaardigheid vooraf.','Zeeziekte en golfslag kunnen de ervaring minder aangenaam maken.','Kies een begeleide tour en laat de weersomstandigheden beslissen.'],
       url:'https://www.webtenerife.com/',
-      photos:[photo('Tenerife cristianos puerto E.jpg'),photo('Tenerife cristianos puerto B.jpg')]
+      photos:[
+        {src:'images/kayak-coast.jpg',label:'Kajakkers op helder zeewater langs een rotsachtige kust'},
+        {src:'images/kayak-dolphins.jpg',label:'Kajakkers op zee met dolfijnen en kliffen op de achtergrond'}
+      ]
     },
     stars: {
       location:'Parque Nacional del Teide (indicatief)', lat:28.255, lon:-16.616,
@@ -107,7 +122,10 @@
       description:'Een rustige zwembaddag bij onze uitvalsbasis in Ona Alborada, ideaal als ontspannen start en als pauze tussen uitstappen.',
       tips:['Controleer of het zwembad daadwerkelijk toegankelijk is voor jullie gezelschap.','Opening, onderhoud en eventuele toegangsprijzen kunnen veranderen.','De kaartpin is een indicatie van het complex, niet van een specifieke ingang.'],
       url:'https://www.google.com/maps/search/?api=1&query=Ona+Alborada+Las+Galletas',
-      photos:[]
+      photos:[
+        {src:'images/alborada-pool-overview.jpg',label:'Overzicht van het grote zwembad van Alborada direct aan zee'},
+        {src:'images/alborada-pool-terrace.jpg',label:'Het zwembad van Alborada met ligbedden, parasols en uitzicht op zee'}
+      ]
     },
     dinner: {
       location:'Nog te kiezen — zuidkust van Tenerife (indicatieve kaartlocatie)', lat:28.062, lon:-16.730,
@@ -116,7 +134,10 @@
       description:'Een gezamenlijke lunch of avond met de familie en vrienden. De precieze locatie kiezen we later samen.',
       tips:['Reserveer voor een grotere groep bij voorkeur vooraf.','Kies een kindvriendelijke plaats met genoeg keuze.','De kaartpin toont alleen een zoekgebied, geen gereserveerd restaurant.'],
       url:'https://www.google.com/maps/search/?api=1&query=restaurants+Costa+Adeje+Tenerife',
-      photos:[]
+      photos:[
+        {src:'images/dinner-tapas.jpg',label:'Een tafel met tapas, olijven, zeevruchten en een glas rode wijn'},
+        {src:'images/dinner-seaside.jpg',label:'Hapjes en drankjes op een terras met uitzicht op zee'}
+      ]
     }
   };
   const $ = id => document.getElementById(id);
@@ -126,15 +147,17 @@
   window.openTenerifeDetails = id => {
     const d=D[id],activity=window.TENERIFE_ACTIVITY_LIST?.find(a=>a[0]===id);
     if(!d||!activity)return;
+    const photoCredits=d.photos.filter(p=>p.credit);
     lastFocus=document.activeElement;
     $('activityDialogTitle').textContent=activity[1]+' '+activity[2];
     $('activityDialogBody').innerHTML=
       '<p>'+safe(d.description)+'</p>'+
       (d.photos.length?'<div class="detail-gallery">'+d.photos.map(p=>
-        '<img src="'+p.src+'" loading="lazy" alt="'+safe(p.label)+'" referrerpolicy="no-referrer">').join('')+'</div>'+
-        '<details class="detail-credits"><summary>Fotobronnen en licenties</summary><ul>'+
-        d.photos.map(p=>'<li><a href="'+p.credit+'" target="_blank" rel="noopener noreferrer">'+safe(p.label)+'</a> — Wikimedia Commons</li>').join('')+
-        '</ul></details>'
+        '<img src="'+safe(p.src)+'"'+(p.srcset?' srcset="'+safe(p.srcset)+'" sizes="(max-width: 500px) calc(92vw - 40px), (max-width: 771px) calc(46vw - 25px), 330px"':'')+' loading="lazy" decoding="async" alt="'+safe(p.label)+'" referrerpolicy="no-referrer">').join('')+'</div>'+
+        (d.photoNote?'<p class="detail-hint">'+safe(d.photoNote)+'</p>':'')+
+        (photoCredits.length?'<details class="detail-credits"><summary>Fotobronnen en licenties</summary><ul>'+
+        photoCredits.map(p=>'<li><a href="'+p.credit+'" target="_blank" rel="noopener noreferrer">'+safe(p.label)+'</a> — Wikimedia Commons'+(p.attribution?' · '+safe(p.attribution):'')+'</li>').join('')+
+        '</ul></details>':'')
         :'<p class="detail-hint">Voor deze nog niet vastgelegde activiteit zijn er geen specifieke foto’s geselecteerd.</p>')+
       '<div class="detail-facts"><div><strong>💶 Prijs</strong><p>'+safe(d.price)+'</p></div>'+
       '<div><strong>⏱️ Tijdsduur</strong><p>'+safe(d.duration)+'</p></div></div>'+
