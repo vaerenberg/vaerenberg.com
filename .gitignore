@@ -212,6 +212,12 @@ _Pvt_Extensions/
 ModelManifest.xml
 
 # Vaerenberg
+# Local Azurite storage emulator
+/AzuriteConfig
+/__azurite_db_*.json
+/__blobstorage__/
+/__queuestorage__/
+
 /tenerife-invitations/
 /src/vaerenberg.com/bower_components
 /src/vaerenberg.com/Properties/ServiceDependencies/vaerenbergbvba - Web Deploy/profile.arm.json

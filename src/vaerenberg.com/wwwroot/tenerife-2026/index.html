@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tenerife Adventure Picker</title>
+<link rel="stylesheet" href="/tenerife-2026/vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="/tenerife-2026/activity-map.css">
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#17413c;background:#f3faf6}*{box-sizing:border-box}
 body{margin:0}header{padding:30px max(18px,calc((100vw - 1000px)/2));background:linear-gradient(110deg,#046768,#13a18c 65%,#edb95e);color:white}
@@ -15,33 +17,63 @@ button{font:inherit;border:0;border-radius:11px;padding:12px;cursor:pointer;back
 button.secondary{background:#e6f2ef;color:#125950}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px}
 .card{border:1px solid #dce9e4;border-radius:15px;padding:17px;display:flex;flex-direction:column;gap:10px}
 .emoji{font-size:52px;text-align:center;padding:14px;background:linear-gradient(120deg,#e4f7ea,#e5f8fd);border-radius:12px}
-.vote{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:auto}
-.vote button{background:#edf6f1;border:2px solid transparent;color:#18514a;padding:10px 2px}
-.vote button.selected{background:#bcebd9;border-color:#098578}.vote small{display:block;font-size:9px}
+.vote{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.vote button{background:#edf6f1;border:2px solid transparent;color:#18514a;display:grid;grid-template-rows:36px 1fr;justify-items:center;align-content:start;gap:5px;padding:8px 2px;font-size:30px;line-height:1.1}
+.vote-emoji{display:flex;align-items:center;justify-content:center;height:36px;line-height:1}
+.vote button.selected{background:#bcebd9;border-color:#098578}.vote small{display:flex;align-items:center;justify-content:center;min-height:2.6em;font-size:9px;line-height:1.3}
 .muted{color:#617e77}.hide{display:none}.note{background:#fff5df;padding:12px;border-left:4px solid #de9b3d;border-radius:7px}
 .progress{height:9px;border-radius:10px;background:#e2efea;overflow:hidden}.progress span{display:block;height:100%;background:#16a38d}
 .result{border-bottom:1px solid #e4eeea;padding:13px 0}
-@media(max-width:500px){.panel{padding:15px}.cards{grid-template-columns:1fr}}
+.details-button{font-size:.9rem;padding:9px 12px;background:#d9f1eb;color:#125950;align-self:flex-start;margin-top:auto}
+.activity-dialog{border:0;border-radius:18px;padding:0;width:min(92vw,710px);max-height:88dvh;box-shadow:0 22px 80px #001c1d66;color:#17413c}
+.activity-dialog::backdrop{background:#0b282caa}
+.detail-header{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;background:#fff;border-bottom:1px solid #e2efea}
+.detail-header h2{margin:0;font-size:1.3rem}
+.detail-close{width:40px;height:40px;flex-shrink:0}
+.detail-body{padding:4px 20px 22px;overflow-wrap:anywhere}
+.detail-body h3{margin:20px 0 8px}
+.detail-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.detail-credits{font-size:.76rem;color:#617e77;margin:-3px 0 15px}.detail-credits summary{cursor:pointer}.detail-credits ul{padding-left:20px}
+.detail-gallery img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;background:#edf6f1;border-radius:10px}
+.detail-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.detail-facts>div{background:#edf6f1;border-radius:12px;padding:12px}
+.detail-facts p{margin:6px 0 0}
+.detail-map{width:100%;height:230px;border:1px solid #dce9e4;border-radius:12px}
+.detail-links a{color:#046768}
+.detail-hint{font-size:.84rem;color:#617e77}
+.detail-body li{margin:7px 0}
+
+@media(max-width:500px){.panel{padding:15px}.cards{grid-template-columns:1fr}.detail-gallery{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header><div>🌴 31 oktober – 9 november 2026</div><h1>Tenerife Adventure Picker</h1><p>Welke avonturen wil jij beleven? Kies vrijuit — niets ligt vast!</p></header>
 <main>
 <section class="panel">
-<div class="toolbar">
-<label>Wie ben jij?<br><select id="person"></select></label>
-<label hidden>Gezinscode (verouderde demo)<br><input id="pin" type="password" placeholder="Niet gebruikt"></label>
+<h2 id="greeting">Welkom bij Tenerife Adventure Picker</h2>
+<div id="previewPersonPicker" hidden>
+<label>Preview als:<select id="person"></select></label>
 </div>
-<p id="syncStatus" class="note">Persoonlijke uitnodiging wordt gecontroleerd…</p><p class="muted">Geef jouw voorkeuren door. Met een geldige uitnodiging worden je antwoorden automatisch centraal bewaard.</p>
+<input id="pin" type="hidden" value="">
+<p id="syncStatus" class="muted" role="status" aria-live="polite"></p>
 <div class="toolbar">
-<button data-tab="choices">✨ Mijn keuzes</button><button class="secondary" data-tab="results">📊 Resultaten</button>
+<button data-tab="choices">✨ Mijn keuzes</button><button class="secondary" data-tab="map">🗺️ Kaart</button><button class="secondary" data-tab="results">📊 Resultaten</button>
 </div>
 </section>
 <section id="choices" class="panel">
 <h2>Wat lijkt jou leuk?</h2><div id="cards" class="cards"></div>
 <h3>💡 Heb je nog een eigen idee?</h3><textarea id="idea" placeholder="Jouw voorstel..."></textarea>
 <h3>Met wie wil je graag iets doen?</h3><div id="joint"></div>
-<p class="muted">Je kunt je voorkeuren op elk moment aanpassen. Je wijzigingen worden automatisch opgeslagen.</p>
+<p class="muted">Je kunt je voorkeuren op elk moment aanpassen. Bij een persoonlijke uitnodiging worden ze automatisch centraal opgeslagen.</p>
+</section>
+<section id="map" class="panel hide" aria-labelledby="activityMapTitle">
+<div class="map-heading"><h2 id="activityMapTitle">🗺️ Tenerife ontdekken</h2><button id="mapReset" class="secondary" type="button">Heel Tenerife</button></div>
+<p class="muted">Klik op een icoontje om de activiteit en je keuze te zien. Je kunt hier ook meteen stemmen.</p>
+<label class="map-picker" for="mapActivityPicker">Activiteit kiezen<select id="mapActivityPicker"><option value="">Kies een activiteit…</option></select></label>
+<div class="map-layout"><div id="activityMap" class="activity-overview-map" role="region" aria-label="Kaart van Tenerife met alle activiteiten"></div>
+<aside class="map-selection" aria-label="Geselecteerde activiteit"><p id="mapSelectionStatus" class="map-selection-status" role="status" aria-live="polite">Kies een icoontje op de kaart of een activiteit uit de lijst.</p><div id="mapActivityCard"></div><p id="mapActivityLocation" class="muted"></p></aside></div>
+<p class="detail-hint">Lichtgroene bol = je hebt al gestemd; witte bol = nog niet. De kleine emoji toont je keuze. Dichtbijgelegen icoontjes staan iets uit elkaar; de lijntjes wijzen naar hun locatie. Locaties zonder vaste afspraak zijn voorbeelden, geen geboekte vertrekpunten.</p>
+<p id="mapError" class="note" role="status" hidden></p>
 </section>
 <section id="results" class="panel hide"><h2>📊 Voorkeuren</h2><p id="scope" class="note"></p><div id="overview"></div></section>
 <section id="transfer" class="panel hide"><h2>📤 Antwoorden delen</h2>
@@ -51,47 +83,56 @@ button.secondary{background:#e6f2ef;color:#125950}.cards{display:grid;grid-templ
 <p class="note">Privacywaarschuwing: deze demo bevat geen echte authenticatie. De gezinscode staat in de broncode en lokale gegevens kunnen technisch worden ingezien. Gebruik voor publieke links pas de volgende, server-side beveiligde versie.</p>
 </section>
 </main>
+<dialog id="activityDialog" class="activity-dialog" aria-labelledby="activityDialogTitle"><div class="detail-header"><h2 id="activityDialogTitle"></h2><button id="activityDialogClose" class="detail-close" type="button" aria-label="Sluiten">✕</button></div><div id="activityDialogBody" class="detail-body"></div></dialog>
 <script>
 const PEOPLE=[['Bart','gezin'],['Griet','gezin'],['Jorijn','gezin'],['Nienke','gezin'],['Marie','gezin'],['Opa','grootouders'],['Oma','grootouders'],['Soonsen ouder 1','soonsen'],['Soonsen ouder 2','soonsen'],['Soonsen dochter 1','soonsen'],['Soonsen dochter 2','soonsen'],['Soonsen oma','soonsen']];
 const ACTIVITIES=[
 ['siam','💦','Siam Park','Glijbanen, golven en waterpret; voorlopig gepland op donderdag 5 november.'],
 ['medano','🏖️','El Médano','Strand, gezellige terrasjes en samen spelen.'],
-['anaga','🌿','Wandelen in Anaga','Het nevelwoud en spectaculaire groene bergen ontdekken.'],
-['teide','🌋','Teide & Roques de García','Vulkanen, bijzondere rotsen en vergezichten.'],
-['chinyero','🥾','Chinyero','Wandelen tussen zwarte lavavelden en dennenbomen.'],
-['boat','🐬','Walvissen spotten','Met een boot de oceaan op.'],
+['anaga','🌿','Wandelen in Anaga','Laurierbos ontdekken; El Pijaral alleen met vergunning, anders een gezinsvriendelijke route.'],
+['teide','🌋','Teide & Roques de García','Vulkanen, rotsen en vergezichten; zonsondergang en sterren kijken als bonus.'],
+['chinyero','🥾','Chinyero','Optionele wandeling tussen lavavelden en dennenbomen op een keuzedag.'],
+['boat','🐬','Walvissen spotten','Alleen optioneel bij zeer rustige zee wegens gevoeligheid voor zeeziekte.'],
 ['snorkel','🤿','Snorkelen','De onderwaterwereld ontdekken.'],
 ['kayak','🛶','Kajakken','Een actief avontuur langs de kust als leeftijd en weer het toelaten.'],
-['stars','🌠','Sterren kijken','Een avond onder de indrukwekkende sterrenhemel.'],
+['stars','🌠','Sterren kijken','Optionele bonus na Teide bij helder weer en genoeg energie.'],
 ['laguna','🏘️','La Laguna','Kleurrijke straatjes en iets lekkers eten.'],
-['pool','🏊','Zwembad Alborada','Een heerlijke relaxdag dicht bij huis.'],
+['pool','🏊','Zwembad Alborada','Een ontspannen zwembaddag bij onze uitvalsbasis Ona Alborada.'],
 ['dinner','🍽️','Samen eten','Een gezellige lunch of avond met vrienden of grootouders.']
 ];
+window.TENERIFE_ACTIVITY_LIST=ACTIVITIES;
 const OPTIONS=[['love','🤩','Super'],['like','😊','Leuk'],['neutral','😐','Om het even'],['no','🙈','Liever niet']];
 const apiBase='/api/tenerife-2026';let params=new URLSearchParams(location.search);let apiToken=params.get('token')||sessionStorage.getItem('tenerife-token')||'';if(apiToken){sessionStorage.setItem('tenerife-token',apiToken);if(params.has('token')){params.delete('token');history.replaceState(null,'',location.pathname+(params.toString()?'?'+params:''));}}
 async function request(route,options={}){const response=await fetch(apiBase+route,{...options,headers:{'Authorization':'Bearer '+apiToken,'Content-Type':'application/json',...(options.headers||{})},cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);return response.status===204?null:response.json()}
-let connected=false;let syncTimer;async function sync(){if(!connected)return;try{await request('/me',{method:'PUT',body:JSON.stringify(record())});$('syncStatus').textContent='✓ Centraal opgeslagen'}catch{$('syncStatus').textContent='Opslaan mislukt; probeer opnieuw'}}
-const STORE='tenerife-adventure-picker-v1';let data={};try{data=JSON.parse(localStorage.getItem(STORE)||'{}')}catch{}
+let connected=false;let preview=false;let syncTimer;async function sync(){if(!connected)return;try{await request('/me',{method:'PUT',body:JSON.stringify(record())});$('syncStatus').textContent='✓ Opgeslagen'}catch{$('syncStatus').textContent='Opslaan mislukt; probeer opnieuw'}}
+const STORE='tenerife-adventure-picker-v1';const PREVIEW_STORE='tenerife-adventure-picker-preview-v1';let data={};
 let who=new URLSearchParams(location.search).get('person')||'Bart';if(!PEOPLE.some(x=>x[0]===who))who='Bart';
 let tab='choices';const $=id=>document.getElementById(id),role=n=>PEOPLE.find(p=>p[0]===n)?.[1]||'soonsen';
 const admin=()=>role(who)==='gezin'&&$('pin').value==='tenerife2026';
+const GROUP_LABELS={gezin:'de Vaerenbergen',grootouders:'de grootouders',soonsen:'de Soonsen'};
+const jointLabel=value=>value==='Met de Vaerenbergs'?'Met de Vaerenbergen':value;
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function record(){return data[who]||(data[who]={votes:{},idea:'',joint:[]})}
-function save(){localStorage.setItem(STORE,JSON.stringify(data));if(connected){$('syncStatus').textContent='Opslaan…';clearTimeout(syncTimer);syncTimer=setTimeout(sync,500)}}
+function save(){if(preview)localStorage.setItem(PREVIEW_STORE,JSON.stringify(data));if(connected){$('syncStatus').textContent='Opslaan…';clearTimeout(syncTimer);syncTimer=setTimeout(sync,500)}}
 function draw(){ $('person').innerHTML=PEOPLE.map(p=>'<option value="'+esc(p[0])+'" '+(who===p[0]?'selected':'')+'>'+esc(p[0])+'</option>').join('');
-for(const id of ['choices','results','transfer'])$(id).classList.toggle('hide',tab!==id);
-if(tab==='choices')drawChoices();if(tab==='results')drawResults();}
-function drawChoices(){let r=record();$('cards').innerHTML=ACTIVITIES.map(([id,emoji,name,desc])=>'<article class="card"><div class="emoji">'+emoji+'</div><strong>'+esc(name)+'</strong><span class="muted">'+esc(desc)+'</span><div class="vote">'+OPTIONS.map(([value,em,label])=>'<button data-act="'+id+'" data-value="'+value+'" class="'+(r.votes[id]===value?'selected':'')+'" aria-label="'+esc(label+' voor '+name)+'">'+em+'<small>'+label+'</small></button>').join('')+'</div></article>').join('');
-document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{record().votes[b.dataset.act]=b.dataset.value;save();drawChoices()});
+for(const id of ['choices','map','results','transfer'])$(id).classList.toggle('hide',tab!==id);
+if(tab==='choices')drawChoices();if(tab==='map')window.showTenerifeMap?.();if(tab==='results')drawResults();}
+function activityCard([id,emoji,name,desc]){const r=record();return '<article class="card"><div class="emoji">'+emoji+'</div><strong>'+esc(name)+'</strong><span class="muted">'+esc(desc)+'</span><button class="details-button" type="button" data-detail="'+id+'" aria-label="Meer informatie over '+esc(name)+'">ⓘ Meer info</button><div class="vote">'+OPTIONS.map(([value,em,label])=>'<button data-act="'+id+'" data-value="'+value+'" class="'+(r.votes[id]===value?'selected':'')+'" aria-label="'+esc(label+' voor '+name)+'">'+'<span class="vote-emoji" aria-hidden="true">'+em+'</span><small>'+label+'</small></button>').join('')+'</div></article>';}
+function bindActivityCards(container){
+container.querySelectorAll('[data-act]').forEach(button=>button.onclick=()=>{record().votes[button.dataset.act]=button.dataset.value;save();drawChoices();window.refreshTenerifeMap?.();if(container.id==='mapActivityCard')container.querySelector('[data-value="'+button.dataset.value+'"]').focus()});
+container.querySelectorAll('[data-detail]').forEach(button=>button.onclick=()=>window.openTenerifeDetails?.(button.dataset.detail));}
+window.mountTenerifeActivityCard=(container,id)=>{const activity=ACTIVITIES.find(activity=>activity[0]===id);container.innerHTML=activity?activityCard(activity):'';bindActivityCards(container)};
+window.getTenerifeVote=id=>OPTIONS.find(option=>option[0]===record().votes[id]);
+function drawChoices(){const r=record();$('cards').innerHTML=ACTIVITIES.map(activityCard).join('');bindActivityCards($('cards'));
 $('idea').value=r.idea||'';
 const types=role(who)==='gezin'?['Met opa en oma','Met de Soonsen','Alleen met ons gezin']:role(who)==='grootouders'?['Met het gezin','Liever af en toe aansluiten']:['Met de Vaerenbergs','Liever flexibel'];
-$('joint').innerHTML=types.map(v=>'<label style="display:inline-block;margin:8px"><input type="checkbox" value="'+esc(v)+'" '+(r.joint.includes(v)?'checked':'')+'> '+esc(v)+'</label>').join('');
+$('joint').innerHTML=types.map(v=>'<label style="display:inline-block;margin:8px"><input type="checkbox" value="'+esc(v)+'" '+(r.joint.includes(v)?'checked':'')+'> '+esc(jointLabel(v))+'</label>').join('');
 document.querySelectorAll('#joint input').forEach(c=>c.onchange=()=>{record().joint=Array.from(document.querySelectorAll('#joint input:checked')).map(v=>v.value);save()});}
-function drawResults(){if(connected){drawServerResults();return}const privileged=admin(),names=Object.keys(data).filter(n=>privileged||role(n)!=='gezin');$('scope').textContent=privileged?'Gezinsdemo: individuele lokale antwoorden zichtbaar.':'Gastdemo: alleen geaggregeerde antwoorden van externe gezelschappen voor gezamenlijke activiteiten. Geen individuele gezinsantwoorden.';const shared=['siam','medano','boat','snorkel','pool','dinner'];let html='<p>'+names.length+' lokaal beschikbare deelnemers</p>';
+function drawResults(){if(connected){drawServerResults();return}const privileged=admin(),names=Object.keys(data).filter(n=>privileged||role(n)!=='gezin');$('scope').textContent='Alleen de lokaal opgeslagen testgegevens zijn zichtbaar. Deze preview is niet verbonden met de centrale resultaten.';const shared=['siam','medano','boat','snorkel','pool','dinner'];let html='<p>'+names.length+' lokaal beschikbare deelnemers</p>';
 for(const [id,emoji,name] of ACTIVITIES){if(!privileged&&!shared.includes(id))continue;const votes=names.map(n=>[n,data[n]?.votes?.[id]]).filter(x=>x[1]);if(!votes.length)continue;const yes=votes.filter(x=>['love','like'].includes(x[1])).length;html+='<div class="result"><strong>'+emoji+' '+esc(name)+'</strong> — '+yes+'/'+votes.length+' enthousiast<div class="progress"><span style="width:'+(100*yes/votes.length)+'%"></span></div>'+(privileged?'<small>'+votes.map(x=>esc(x[0])+': '+esc(x[1])).join(' · ')+'</small>':'')+'</div>';}
 if(privileged){html+='<h3>Eigen ideeën</h3>';names.forEach(n=>{if(data[n]?.idea)html+='<p><strong>'+esc(n)+':</strong> '+esc(data[n].idea)+'</p>'})}$('overview').innerHTML=html;}
 function download(obj,filename){const url=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),3000)}
-$('person').onchange=e=>{who=e.target.value;draw()};$('pin').oninput=()=>{if(tab==='results')drawResults()};$('idea').oninput=e=>{record().idea=e.target.value.slice(0,1500);save()};
+$('person').onchange=e=>{if(!preview)return;who=e.target.value;$('greeting').textContent='Preview: '+who+' ('+(GROUP_LABELS[role(who)]||role(who))+')';draw()};$('pin').oninput=()=>{if(tab==='results')drawResults()};$('idea').oninput=e=>{record().idea=e.target.value.slice(0,1500);save()};
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;draw()});
 $('exportOne').onclick=()=>download({schema:STORE,people:{[who]:record()}},'tenerife-'+who.replaceAll(' ','-')+'.json');
 $('exportAll').onclick=()=>{if(!admin())return alert('Selecteer eerst een gezinslid en voer de demo-gezinscode in.');download({schema:STORE,people:data},'tenerife-alle-antwoorden.json')};
@@ -104,20 +145,35 @@ $('scope').textContent='Alle ingevulde antwoorden van het gezin en de andere gez
 $('overview').innerHTML=result.respondents.map(p=>{
 const votes=Object.entries(p.ballot.votes||{}).map(([k,v])=>esc(ACTIVITIES.find(a=>a[0]===k)?.[2]||k)+': '+esc(OPTIONS.find(o=>o[0]===v)?.[2]||v)).join(' · ');
 const joint=Array.isArray(p.ballot.joint)?p.ballot.joint:[];
-return '<div class="result"><strong>'+esc(p.name)+'</strong> ('+esc(p.group)+')'
+return '<div class="result"><strong>'+esc(p.name)+'</strong> ('+esc(GROUP_LABELS[p.group]||p.group)+')'
 +(votes?'<p>'+votes+'</p>':'')
-+(joint.length?'<p><strong>Met wie?</strong> '+joint.map(esc).join(' · ')+'</p>':'')
++(joint.length?'<p><strong>Met wie?</strong> '+joint.map(value=>esc(jointLabel(value))).join(' · ')+'</p>':'')
 +(p.ballot.idea?'<p><strong>Eigen idee:</strong> '+esc(p.ballot.idea)+'</p>':'')
 +'</div>';
 }).join('')||'<p>Er zijn nog geen antwoorden.</p>';
 }else{
 $('scope').textContent='Samengevoegde antwoorden van jouw gezelschap. Er worden geen individuele namen of antwoorden getoond.';
 const activities=(result.activities||[]).map(a=>'<div class="result">'+esc(ACTIVITIES.find(x=>x[0]===a.activity)?.[2]||a.activity)+': '+a.positive+'/'+a.total+' enthousiast</div>').join('');
-const joint=(result.joint||[]).map(j=>'<div class="result">'+esc(j.option)+': '+j.count+' deelnemer(s)</div>').join('');
+const joint=(result.joint||[]).map(j=>'<div class="result">'+esc(jointLabel(j.option))+': '+j.count+' deelnemer(s)</div>').join('');
 $('overview').innerHTML=activities+'<h3>Met wie wil je graag iets doen?</h3>'+(joint||'<p>Nog geen voorkeuren.</p>');
 }
 }catch{$('scope').textContent='Resultaten konden niet worden opgehaald.';$('overview').innerHTML='';}
 }
-(async()=>{if(apiToken){try{const me=await request('/me');who=me.name;data[who]=me.ballot||{votes:{},idea:'',joint:[]};connected=true;$('person').disabled=true;$('pin').closest('label').style.display='none';$('transfer').innerHTML='<h2>Gedeelde antwoorden</h2><p>Je antwoorden worden automatisch centraal opgeslagen. De persoonlijke uitnodigingslink is vertrouwelijk.</p>';$('syncStatus').textContent='✓ Verbonden als '+who;draw();return}catch{$('syncStatus').textContent='Uitnodiging ongeldig of opslag niet bereikbaar. Probeer later opnieuw.';document.getElementById('choices').innerHTML='<h2>Geen toegang</h2><p>De uitnodigingslink werkt momenteel niet. Vraag de organisator om een nieuwe link.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true);return}}document.getElementById('choices').innerHTML='<h2>Persoonlijke uitnodiging vereist</h2><p>Open de link die je van de organisator hebt ontvangen.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true)})();
+(async()=>{if(apiToken){try{const me=await request('/me');who=me.name;data={[who]:me.ballot||{votes:{},idea:'',joint:[]}};connected=true;$('greeting').textContent='Hallo '+me.name+' ('+(GROUP_LABELS[me.group]||me.group)+')!';$('person').disabled=true;$('transfer').innerHTML='<h2>Gedeelde antwoorden</h2><p>Je antwoorden worden automatisch centraal opgeslagen. De persoonlijke uitnodigingslink is vertrouwelijk.</p>';$('syncStatus').textContent='';draw();return}catch{$('syncStatus').textContent='Uitnodiging ongeldig of opslag niet bereikbaar. Probeer later opnieuw.';document.getElementById('choices').innerHTML='<h2>Geen toegang</h2><p>De uitnodigingslink werkt momenteel niet. Vraag de organisator om een nieuwe link.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true);return}}try{
+  const response=await fetch(apiBase+'/preview-enabled',{cache:'no-store'});
+  if(response.ok && (await response.json()).enabled===true){
+    preview=true;
+    try{data=JSON.parse(localStorage.getItem(PREVIEW_STORE)||'{}')||{}}catch{data={}}
+    $('previewPersonPicker').hidden=false;
+    $('greeting').textContent='Preview: '+who+' ('+(GROUP_LABELS[role(who)]||role(who))+')';
+    $('syncStatus').textContent='🧪 Alleen lokale preview. Antwoorden blijven in deze browser en worden NIET naar Azure gestuurd.';
+    draw();
+    return;
+  }
+}catch{}
+$('greeting').textContent='Persoonlijke uitnodiging vereist';document.getElementById('choices').innerHTML='<h2>Persoonlijke uitnodiging vereist</h2><p>Open de link die je van de organisator hebt ontvangen.</p>';document.getElementById('person').disabled=true;document.querySelectorAll('[data-tab]').forEach(b=>b.disabled=true)})();
 </script>
+<script src="/tenerife-2026/vendor/leaflet/leaflet.js" defer></script>
+<script src="/tenerife-2026/activity-details.js" defer></script>
+<script src="/tenerife-2026/activity-map.js" defer></script>
 </body></html>

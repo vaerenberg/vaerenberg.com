@@ -41,6 +41,9 @@ public static class TenerifeApi
     public static void MapTenerifeApi(this WebApplication app)
     {
         var api = app.MapGroup("/api/tenerife-2026");
+        // Preview capability is never registered outside Development.
+        if (app.Environment.IsDevelopment())
+            api.MapGet("/preview-enabled", () => Results.Ok(new { enabled = true }));
         api.AddEndpointFilter(async (context, next) => { context.HttpContext.Response.Headers.CacheControl = "no-store"; return await next(context); });
         api.MapGet("/me", async (HttpContext ctx, IConfiguration cfg) => {
             var me = Authenticate(ctx, cfg);
